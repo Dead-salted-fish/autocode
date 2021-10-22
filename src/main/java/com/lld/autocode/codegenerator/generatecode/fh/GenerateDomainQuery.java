@@ -3,6 +3,7 @@ package com.lld.autocode.codegenerator.generatecode.fh;
 import com.lld.autocode.codegenerator.entity.GenerateDate;
 import com.lld.autocode.codegenerator.entity.JavaTypeDo;
 import com.lld.autocode.codegenerator.entity.TableMetaData;
+import com.lld.autocode.codegenerator.generatecode.CurrencyMethods;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,7 +64,7 @@ public class GenerateDomainQuery {
         String annotation = "/**\n" +
                 " * @description:\n" +
                 " * @author: wzl\n" +
-                " * @date" + getFormatDate() + "\n" +
+                " * @date " + CurrencyMethods.getFormatDate() + "\n" +
                 " */" + "\n"
                 + "\n";
 
@@ -91,23 +92,17 @@ public class GenerateDomainQuery {
         for (TableMetaData item:attributeDate) {
             if(item.isQueryDtoAttribute()){
                 String columnName = item.getColumnName();
-                String[] columnNameArr = columnName.split("_");
-                StringBuffer strBuff = new StringBuffer();
-                for(int i =0,j=columnNameArr.length;i<j;i++){
-                    if(i>0){
-                        strBuff.append(captureName(columnNameArr[i]));
-                    }else {
-                        strBuff.append(columnNameArr[i]);
-                    }
-                }
-                String variableName = strBuff.toString();
+
+                String str = CurrencyMethods.firstLetterLowercaseAfterSplit(columnName,"_");
+
+                String variableName = str;
                 JavaTypeDo javaTypeDo = typeMap.get(item.getJavaType());
                 if(javaTypeDo.getImportPackage().equals("1")){
                     this.head = "import "+javaTypeDo.getJavaTypePackage()+";" + "\n"+ this.head;
                 }
                 String javaType = javaTypeDo.getJavaTypeClassName();
 
-                String queryBy = "   public  @@@Query queryBy" + captureName(variableName) + "(" + javaType + " " + variableName + "){\n" +
+                String queryBy = "   public  @@@Query queryBy" + CurrencyMethods.firstLetterUppercase(variableName) + "(" + javaType + " " + variableName + "){\n" +
                         "        if(null != " + variableName + "){\n" +
                         "            addQueryCon(new QueryCondition(\"" + variableName + "\", QueryTypeEnum.EQ, " + variableName + "));\n" +
                         "        }\n" +
@@ -131,23 +126,5 @@ public class GenerateDomainQuery {
 
         this.codeBody =codeBody;
     }
-
-
-    //首字母大写
-    private  String captureName(String attributeName) {
-        char[] cs = attributeName.toCharArray();
-        cs[0] -= 32;
-        return String.valueOf(cs);
-
-    }
-
-    private  String getFormatDate() {
-        Date now = new Date();
-        SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String formatDate = f.format(now);
-        return formatDate;
-    }
-
-
 
 }

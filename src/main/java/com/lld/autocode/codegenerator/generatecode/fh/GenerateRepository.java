@@ -1,5 +1,7 @@
 package com.lld.autocode.codegenerator.generatecode.fh;
 
+import com.lld.autocode.codegenerator.generatecode.CurrencyMethods;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -48,7 +50,7 @@ public class GenerateRepository {
         String annotation = "/**\n" +
                 " * @description:\n" +
                 " * @author: wzl\n" +
-                " * @date" + getFormatDate() + "\n" +
+                " * @date" + CurrencyMethods.getFormatDate() + "\n" +
                 " */" + "\n"
                 + "\n";
 
@@ -62,11 +64,6 @@ public class GenerateRepository {
          this.codeBody = codeBody;
     }
 
-    private  String getFormatDate() {
-        Date now = new Date();
-        SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String formatDate = f.format(now);
-        return formatDate;
-    }
+
 
 }

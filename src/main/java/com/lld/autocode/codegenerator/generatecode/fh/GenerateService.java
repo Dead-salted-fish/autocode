@@ -1,5 +1,7 @@
 package com.lld.autocode.codegenerator.generatecode.fh;
 
+import com.lld.autocode.codegenerator.generatecode.CurrencyMethods;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -57,19 +59,13 @@ public class GenerateService {
         String annotation = "/**\n" +
                 " * @description:\n" +
                 " * @author: wzl\n" +
-                " * @date" + getFormatDate() + "\n" +
+                " * @date" + CurrencyMethods.getFormatDate() + "\n" +
                 " */" + "\n"
                 + "\n";
 
         this.annotation = annotation;
     }
 
-    public  String getFormatDate() {
-        Date now = new Date();
-        SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String formatDate = f.format(now);
-        return formatDate;
-    }
 
     private  void getCodeBody(String upClassName, String lowerClassName) throws IllegalAccessException {
         //String lowerCaseClassName = (new StringBuilder()).append(Character.toLowerCase(className.charAt(0))).append(className.substring(1)).toString();
@@ -82,7 +78,7 @@ public class GenerateService {
                 "     * 参数: @@@QueryDto \n" +
                 "     * 返回值类型: com.ifohoo.common.ifms.common.base.ReturnMessage \n" +
                 "     * 作者: wzl\n" +
-                "     * 创建时间: " + getFormatDate() + "\n" +
+                "     * 创建时间: " + CurrencyMethods.getFormatDate() + "\n" +
                 "     * 禅道任务ID: 674\n" +
                 "     */\n" +
                 "    ReturnMessage findList(@@@QueryDto ###QueryDto);\n" +
@@ -92,7 +88,7 @@ public class GenerateService {
                 "     * 参数: @@@Dto\n" +
                 "     * 返回值类型: com.ifohoo.common.ifms.common.base.ReturnMessage\n" +
                 "     * 作者: wzl\n" +
-                "     * 创建时间: " + getFormatDate() + "\n" +
+                "     * 创建时间: " + CurrencyMethods.getFormatDate() + "\n" +
                 "     * 禅道任务ID: 674\n" +
                 "     */\n" +
                 "    ReturnMessage save(@@@Dto ###Dto);\n" +
@@ -102,7 +98,7 @@ public class GenerateService {
                 "     * 参数: @@@Dto\n" +
                 "     * 返回值类型: com.ifohoo.common.ifms.common.base.ReturnMessage\n" +
                 "     * 作者: wzl\n" +
-                "     * 创建时间: " + getFormatDate() + "\n" +
+                "     * 创建时间: " + CurrencyMethods.getFormatDate() + "\n" +
                 "     * 禅道任务ID: 674\n" +
                 "     */\n" +
                 "    ReturnMessage update(@@@Dto ###Dto);\n" +
@@ -112,7 +108,7 @@ public class GenerateService {
                 "     * 参数: @@@Dto\n" +
                 "     * 返回值类型: com.ifohoo.common.ifms.common.base.ReturnMessage\n" +
                 "     * 作者: wzl\n" +
-                "     * 创建时间: " + getFormatDate() + "\n" +
+                "     * 创建时间: " + CurrencyMethods.getFormatDate() + "\n" +
                 "     * 禅道任务ID: 674\n" +
                 "     */\n" +
                 "    ReturnMessage delete(@@@Dto ###Dto);\n" +
@@ -122,10 +118,6 @@ public class GenerateService {
     }
 
 
-    public  String captureName(String attributeName) {
-        char[] cs = attributeName.toCharArray();
-        cs[0] -= 32;
-        return String.valueOf(cs);
-    }
+
 
 }

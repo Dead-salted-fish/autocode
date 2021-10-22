@@ -3,6 +3,7 @@ package com.lld.autocode.codegenerator.generatecode.fh;
 import com.lld.autocode.codegenerator.entity.GenerateDate;
 import com.lld.autocode.codegenerator.entity.JavaTypeDo;
 import com.lld.autocode.codegenerator.entity.TableMetaData;
+import com.lld.autocode.codegenerator.generatecode.CurrencyMethods;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,19 +64,13 @@ public class GenerateDo {
         String annotation = "/**\n" +
                 " * @description:\n" +
                 " * @author: wzl\n" +
-                " * @date" + getFormatDate() + "\n" +
+                " * @date" + CurrencyMethods.getFormatDate() + "\n" +
                 " */" + "\n"
                 + "\n";
 
         this.annotation = annotation;
     }
 
-    public  String getFormatDate() {
-        Date now = new Date();
-        SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String formatDate = f.format(now);
-        return formatDate;
-    }
 
     private  void getCodeBody(String upClassName, String lowerClassName, GenerateDate date, Map<String, JavaTypeDo> typeMap) throws IllegalAccessException {
         //String lowerCaseClassName = (new StringBuilder()).append(Character.toLowerCase(className.charAt(0))).append(className.substring(1)).toString();
@@ -83,15 +78,12 @@ public class GenerateDo {
         String codeBody = null;
          String getAndSet= "";
         String tableName = date.getTableName();
-        String[] tableNameArr = tableName.split("_");
-        StringBuffer tableNameUp = new StringBuffer();
-        for(int i =0,j=tableNameArr.length;i<j;i++){
-            tableNameUp.append(captureName(tableNameArr[i]));
-        }
+
+        String tableNameUp =CurrencyMethods.firstLetterUppercaseAfterSplit(tableName,"_");
 
         codeBody = "@Entity\n" +
                 "@Table(name = \""+date.getTableName()+"\")\n" +
-                "public class "+tableNameUp.toString()+"Do extends BaseDo {\n";
+                "public class "+tableNameUp+"Do extends BaseDo {\n";
         List<TableMetaData> attributeDate = date.getAttributeDate();
         for(TableMetaData item:attributeDate){
            String  normalAnnotation = "";
@@ -113,46 +105,26 @@ public class GenerateDo {
            }
 
             String columnName = item.getColumnName();
-            String[] columnNameArr = columnName.split("_");
-            StringBuffer strBuffFirstLower = new StringBuffer();
-            StringBuffer strBuffFirstUp = new StringBuffer();
-            for(int i =0,j=columnNameArr.length;i<j;i++){
-                if(i>0){
-                    strBuffFirstLower.append(captureName(columnNameArr[i]));
-                }else {
-                    strBuffFirstLower.append(columnNameArr[i]);
-                }
-            }
 
-            for(int i =0,j=columnNameArr.length;i<j;i++){
-                strBuffFirstUp.append(captureName(columnNameArr[i]));
-            }
-
+            String strBuffFirstLower = CurrencyMethods.firstLetterLowercaseAfterSplit(columnName,"_");
+            String strBuffFirstUp = CurrencyMethods.firstLetterUppercaseAfterSplit(columnName,"_");
 
             JavaTypeDo javaTypeDo = typeMap.get(item.getJavaType());
             if(javaTypeDo.getImportPackage().equals("1")){
                 this.head = "import "+javaTypeDo.getJavaTypePackage()+";" + "\n"+ this.head;
             }
             String javaType = javaTypeDo.getJavaTypeClassName();
-            attribute = attribute + javaType +" "+ strBuffFirstLower.toString()+";\n\n";
+            attribute = attribute + javaType +" "+ strBuffFirstLower+";\n\n";
             codeBody = codeBody + normalAnnotation +  japAnnotation + attribute;
 
             getAndSet = getAndSet + " public "+javaType+" "+(javaType.equals("Boolean")||javaType.equals("boolean")?"is":"get")+""+strBuffFirstUp.toString()+"() {\n" +
-                    "        return "+strBuffFirstLower.toString()+";\n" +
+                    "        return "+strBuffFirstLower+";\n" +
                     "    }\n"
-                     +"public void set"+strBuffFirstUp.toString()+"("+javaType+" "+strBuffFirstLower.toString()+") {\n" +
-                    "        this."+strBuffFirstLower.toString()+" = "+strBuffFirstLower.toString()+";\n" +
+                     +"public void set"+strBuffFirstUp+"("+javaType+" "+strBuffFirstLower+") {\n" +
+                    "        this."+strBuffFirstLower+" = "+strBuffFirstLower+";\n" +
                     "    }\n";
         }
 
         this.codeBody = codeBody +getAndSet+ "}\n";
     }
-
-
-    public  String captureName(String attributeName) {
-        char[] cs = attributeName.toCharArray();
-        cs[0] -= 32;
-        return String.valueOf(cs);
-    }
-
 }

@@ -2,6 +2,7 @@ package com.lld.autocode.codegenerator.generatecode.fh;
 
 import com.lld.autocode.codegenerator.entity.GenerateDate;
 import com.lld.autocode.codegenerator.entity.TableMetaData;
+import com.lld.autocode.codegenerator.generatecode.CurrencyMethods;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -60,19 +61,14 @@ public class GenerateServiceImpl {
         String annotation = "/**\n" +
                 " * @description:\n" +
                 " * @author: wzl\n" +
-                " * @date" + getFormatDate() + "\n" +
+                " * @date" + CurrencyMethods.getFormatDate() + "\n" +
                 " */" + "\n"
                 + "\n";
 
         this.annotation = annotation;
     }
 
-    private String getFormatDate() {
-        Date now = new Date();
-        SimpleDateFormat f = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String formatDate = f.format(now);
-        return formatDate;
-    }
+
 
     private void getCodeBody(String upClassName, String lowerClassName, GenerateDate date) throws IllegalAccessException {
         //String lowerCaseClassName = (new StringBuilder()).append(Character.toLowerCase(className.charAt(0))).append(className.substring(1)).toString();
@@ -91,13 +87,7 @@ public class GenerateServiceImpl {
         List<TableMetaData> attributeDates = date.getAttributeDate();
         for (TableMetaData item : attributeDates) {
             if (item.isQueryDtoAttribute()) {
-                String[] columnNameArr = item.getColumnName().split("_");
-                StringBuffer strBuff = new StringBuffer();
-
-                for (int i = 0, j = columnNameArr.length; i < j; i++) {
-                    strBuff.append(captureName(columnNameArr[i]));
-                }
-                String attributeNameWithFirstUp = strBuff.toString();
+                String attributeNameWithFirstUp = CurrencyMethods.firstLetterUppercaseAfterSplit(item.getColumnName(),"_");
                 queryBody = queryBody + ".queryBy" + attributeNameWithFirstUp + "(QueryDto.get" + attributeNameWithFirstUp + "())" + "\n";
             }
         }
@@ -146,10 +136,6 @@ public class GenerateServiceImpl {
     }
 
 
-    private String captureName(String attributeName) {
-        char[] cs = attributeName.toCharArray();
-        cs[0] -= 32;
-        return String.valueOf(cs);
-    }
+
 
 }
