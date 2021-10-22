@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="/js/moment.js"></script>
+<script src="/js/antd.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/antd.css"/>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    <a-table :columns="columns" :data-source="data" bordered style="width: 600px">
+        <template
+                v-for="col in ['comment']"
+                :slot="col"
+                slot-scope="text, record, index"
+        >
+            <div :key="col">
+<!--                <div v-if="record.editable">-->
+                    <a-input
+                            style="margin: -5px 0"
+                            :value="text"
+                            @change="e => handleChange(e.target.value, record.key, col)"
+                    />
+<!--                </div>-->
+<!--                <div v-else>-->
+<!--                    <template>-->
+<!--                        {{ text }}-->
+<!--                    </template>-->
+<!--                </div>-->
+            </div>
+        </template>
+
+        <template slot="isNull" slot-scope="text, record, index">
+            <div class="editable-row-operations">
+                <template>
+                    <a-radio-group name="radioGroup" :default-value="record.isNull" @change="e=>redioGroupChange(e.target.value, record.key)">
+                        <a-radio :value="true">
+                            true
+                        </a-radio>
+                        <a-radio :value="false">
+                            false
+                        </a-radio>
+                    </a-radio-group>
+                </template>
+            </div>
+        </template>
+
+<!--        <template slot="operation" slot-scope="text, record, index">-->
+<!--            <div class="editable-row-operations">-->
+<!--        <span v-if="record.editable">-->
+<!--          <a @click="() => save(record.key)">Save</a>-->
+<!--          <a-popconfirm title="Sure to cancel?" @confirm="() => cancel(record.key)">-->
+<!--            <a>Cancel</a>-->
+<!--          </a-popconfirm>-->
+<!--        </span>-->
+<!--                <span v-else>-->
+<!--          <a :disabled="editingKey !== ''" @click="() => edit(record.key)">Edit</a>-->
+<!--        </span>-->
+<!--            </div>-->
+<!--        </template>-->
+    </a-table>
+    <a-button type="primary" @click="() => test()">
+        test
+    </a-button>
+</div>
+
+<script>
+    const columns = [
+        {
+            title: 'colIndex',
+            dataIndex: 'colIndex',
+            width: '100px',
+        },
+        {
+            title: 'name',
+            dataIndex: 'name',
+            width: '100px',
+        },
+        {
+            title: 'type',
+            dataIndex: 'type',
+            width: '100px',
+        },
+        {
+            title: 'isNull',
+            dataIndex: 'isNull',
+            width: '100px',
+            scopedSlots: {customRender: 'isNull'},
+        },
+        {
+            title: 'comment',
+            dataIndex: 'comment',
+            width: '210px',
+            scopedSlots: {customRender: 'comment'},
+        },
+        // {
+        //     title: 'operation',
+        //     dataIndex: 'operation',
+        //     width: '210px',
+        //     scopedSlots: {customRender: 'operation'},
+        // },
+    ];
+
+    const data = [];
+    for (let i = 0; i < 12; i++) {
+        data.push({
+            key: i.toString(),
+            colIndex: `colIndex ${i}`,
+            name: `name ${i}`,
+            type: `type ${i}`,
+            isNull: true,
+            comment: `comment ${i}`,
+        });
+    }
+
+    Vue.use(antd)
+
+    var app = new Vue({
+        el: '#app',
+        data() {
+            this.cacheData = data.map(item => ({...item}));
+            return {
+                data,
+                columns,
+                editingKey: '',
+            };
+        },
+        methods: {
+            redioGroupChange(value, key) {
+                console.log(value);
+                console.log(key);
+                const newData = [...this.data];
+                const target = newData.filter(item => key === item.key)[0];
+                if (target) {
+                    target['isNull'] = value;
+                    this.data = newData;
+                }
+            },
+            test() {
+                console.log(this.data);
+            },
+            handleChange(value, key, column) {
+                const newData = [...this.data];
+                const target = newData.filter(item => key === item.key)[0];
+                if (target) {
+                    target[column] = value;
+                    this.data = newData;
+                }
+                console.log("this.data", this.data)
+            },
+            // edit(key) {
+            //     const newData = [...this.data];
+            //     const target = newData.filter(item => key === item.key)[0];
+            //     console.log('target', target)
+            //     this.editingKey = key;
+            //     if (target) {
+            //         target.editable = true;
+            //         this.data = newData;
+            //     }
+            // },
+            // save(key) {
+            //     const newData = [...this.data];
+            //     const newCacheData = [...this.cacheData];
+            //     const target = newData.filter(item => key === item.key)[0];
+            //     const targetCache = newCacheData.filter(item => key === item.key)[0];
+            //     if (target && targetCache) {
+            //         delete target.editable;
+            //         this.data = newData;
+            //         Object.assign(targetCache, target);
+            //         this.cacheData = newCacheData;
+            //     }
+            //     this.editingKey = '';
+            // },
+            // cancel(key) {
+            //     const newData = [...this.data];
+            //     const target = newData.filter(item => key === item.key)[0];
+            //     this.editingKey = '';
+            //     if (target) {
+            //         Object.assign(target, this.cacheData.filter(item => key === item.key)[0]);
+            //         delete target.editable;
+            //         this.data = newData;
+            //     }
+            // },
+        },
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lld.autocode.codegenerator.mapper.TableMapper">
+
+    <select id="getAllTableName"  resultType="com.lld.autocode.codegenerator.entity.Table" >
+        select table_name  from information_schema.tables where table_schema= (select DATABASE())
+    </select>
+
+    <select id="getTableMetaData" parameterType="string"  resultType="com.lld.autocode.codegenerator.entity.TableMetaData" >
+        SELECT
+            @colkey := @colkey + 1  row_key,
+            COLUMN_NAME column_name ,
+            DATA_TYPE data_type,
+            if(IS_NULLABLE='YES',TRUE,FALSE) can_nullable,
+            COLUMN_KEY column_key,
+            COLUMN_COMMENT remark
+        FROM
+            INFORMATION_SCHEMA.COLUMNS,(SELECT @colkey := 0) b
+        where    table_name   = #{tableName}
+    </select>
+
+    <select id="getAllTypeMapping"   resultType="com.lld.autocode.codegenerator.entity.TypeMapping" >
+        SELECT a.database_type,
+               b.java_type_class_name,
+               b.java_type_package,
+               b.import_package
+               FROM database_type_mapping a
+               LEFT JOIN java_type b on a.java_type_id = b.id
+    </select>
+
+    <select id="getAllJavaTypePackage"   resultType="string" >
+        SELECT java_type_package FROM java_type
+    </select>
+
+    <select id="getAllJavaType"   resultType="com.lld.autocode.codegenerator.entity.JavaTypeDo" >
+        SELECT * FROM java_type
+    </select>
+
+
+
+</mapper>

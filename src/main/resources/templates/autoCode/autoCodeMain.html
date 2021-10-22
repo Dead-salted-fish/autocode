@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="/js/vue-resource.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="/js/moment.js"></script>
+<script src="/js/antd.js"></script>
+<script src="/js/httpVueLoader.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/css/antd.css"/>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app1">
+    <a-table :columns="columns" :data-source="data" :pagination="pagination">
+        <template slot="action" slot-scope="text, record">
+            <span>
+                 <a @click="showGenerateModal(record)">生成</a>
+           </span>
+
+        </template>
+
+    </a-table>
+
+    <gengrate v-if="visible===true" :visible="visible" :close="close" :table-name="tableName"></gengrate>
+</div>
+</body>
+
+<script>
+    const columns = [
+        {
+            title: '序号',
+            dataIndex: 'colIndex',
+            customRender: (text, record, index) => `${index + 1}`,
+        },
+        {
+            title: '表名',
+            dataIndex: 'tableName',
+            key: 'age',
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            scopedSlots: {customRender: 'action'},
+        },
+    ];
+
+    Vue.use(antd)
+    Vue.use(VueResource)
+    var app = new Vue({
+        el: '#app1',
+        components: {
+            'gengrate': httpVueLoader('/template/generate.vue')
+        },
+        data() {
+            return {
+                columns,
+                visible:false,
+                tableName:null,
+                data: [{
+                    tableName: 'tableName1',
+                }],
+                pagination: {
+                    pageNo: 1,
+                    pageSize: 10, // 默认每页显示数量
+                    showSizeChanger: true, // 显示可改变每页数量
+                    pageSizeOptions: ["10", "20", "50", "100"], // 每页数量选项
+                    showTotal: total => `共${total}条`, // 显示总数
+                    onShowSizeChange: (current,pageSize) =>{this.onShowSizeChange(current,pageSize)}, // 改变每页数量时更新显示
+                    onChange:(pageNumber)=>{this.onPageChange(pageNumber)} , //点击页码事件
+                    total: 0, //总条数
+                    current: 0,
+                    buildOptionText: pageSizeOptions => `${pageSizeOptions.value}条/页`,
+                    // size: "small",
+                },
+            }
+        },
+        created: function () {
+            this.initTable()
+
+        },
+        methods: {
+            close (){
+              this.visible = false
+            },
+            showGenerateModal (record) {
+                this.tableName = record.tableName;
+                this.visible = true;
+                //console.log('visible = true');
+            },
+            initTable() {
+                this.getTableData(this.pagination.pageNo,this.pagination.pageSize)
+            },
+            getTableData(current,pageSize) {
+                this.$http.get('http://localhost:9090/getAllTableName',{params:{page:current,pageSize:pageSize}})
+                    .then((success) => {
+                        console.log(success.body);
+                        this.data = success.body.records;
+                        this.pagination.total = success.body.total
+                        this.pagination.current = success.body.current
+                        console.log("success.body");
+                    }, (error) => {
+                        console.log(error);
+                    })
+            },
+            onShowSizeChange(current,pageSize) {
+                this.pagination.current = 1
+                this.pagination.pageSize = pageSize
+                this.getTableData(current,pageSize)
+            },
+
+            onPageChange(pageNumber) {
+               this.pagination.current = pageNumber
+                this.getTableData(pageNumber, this.pagination.pageSize)
+            },
+        },
+    })
+</script>
+
+</html>
