@@ -1,4 +1,4 @@
-package com.lld.autocode.codegenerator.other;
+package com.lld.autocode.config;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
