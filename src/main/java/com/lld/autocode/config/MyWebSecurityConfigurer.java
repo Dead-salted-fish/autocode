@@ -1,11 +1,19 @@
 package com.lld.autocode.config;
 
 
+import com.lld.autocode.security.filter.TokenAuthenticationFilter;
+import com.lld.autocode.security.filter.TokenLoginFilter;
+import com.lld.autocode.utils.JwtTokenUtil;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+
+import javax.annotation.Resource;
 
 /**
  * @description:
@@ -14,19 +22,28 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  */
 @EnableWebSecurity
 public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    @Resource
+    private JwtTokenUtil jwtTokenUtil;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                   .antMatchers("/**").hasRole("admin")
+//                   .antMatchers("/**").hasRole("admin")
                    .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .and()
+                .addFilterAfter(new TokenLoginFilter(authenticationManager(),jwtTokenUtil), LogoutFilter.class)
+                .addFilterAfter(new TokenAuthenticationFilter(authenticationManager()), LogoutFilter.class)
                 .httpBasic()
                 .and()
                 .csrf()
-                    .disable();
+                    .disable()
+                .sessionManagement()
+                     .sessionCreationPolicy(SessionCreationPolicy.NEVER)  //禁用session
+                    ;
 
     }
 

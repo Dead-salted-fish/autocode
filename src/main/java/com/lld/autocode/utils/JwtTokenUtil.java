@@ -1,12 +1,13 @@
-package com.oyc.security.util;
+package com.lld.autocode.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.CompressionCodecs;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
-
+@Component
 public class JwtTokenUtil {
     private static long tokenExpiration = 24 * 60 * 60 * 1000;
     private static String tokenSignKey = "123456";
