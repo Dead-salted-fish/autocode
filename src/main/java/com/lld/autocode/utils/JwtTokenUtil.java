@@ -6,17 +6,18 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
 import java.util.Date;
 @Component
 public class JwtTokenUtil {
     private static long tokenExpiration = 24 * 60 * 60 * 1000;
-    private static String tokenSignKey = "123456";
+    private static String tokenSignKey = Base64.getEncoder().encodeToString("wzl".getBytes());
     private static String userRoleKey = "userRole";
 
     public String createToken(String userName) {
         String token = Jwts.builder().setSubject(userName)
                 .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
-                .signWith(SignatureAlgorithm.HS512, tokenSignKey).compressWith(CompressionCodecs.GZIP).compact();
+                .signWith(SignatureAlgorithm.HS512,  tokenSignKey).compressWith(CompressionCodecs.GZIP).compact();
         return token;
     }
 

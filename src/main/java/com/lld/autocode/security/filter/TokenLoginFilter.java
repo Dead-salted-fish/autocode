@@ -1,11 +1,13 @@
 package com.lld.autocode.security.filter;
 
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lld.autocode.security.entity.User;
 import com.lld.autocode.utils.JwtTokenUtil;
 import com.lld.autocode.utils.ResponseUtil;
 import com.lld.autocode.utils.ReturnMessage;
+import com.sun.javafx.collections.MappingChange;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,9 +22,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName: TokenLoginFilter
@@ -48,11 +49,35 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
 
-            Map<String, String[]> map = req.getParameterMap();
-            String username = map.get("username")[0];
-            String password = map.get("password")[0];
-            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password, new ArrayList<>()));
+        String contentType = req.getHeader("Content-Type");
 
+        Map<String,String> userMap = new HashMap<>();
+
+        if(contentType.contains("application/json")){
+            userMap =  parseUserWithJson(req);
+        }else if (contentType.contains("application/x-www-form-urlencoded")){
+            userMap =  parseUserWithForm(req);
+        }
+            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userMap.get("username"), userMap.get("password"), new ArrayList<>()));
+    }
+
+    private Map<String, String> parseUserWithForm(HttpServletRequest req) {
+
+        Map<String, String> map = new HashMap<>();
+        map.put("username",req.getParameter("username")) ;
+        map.put("password",req.getParameter("password")) ;
+     return map;
+    }
+
+    private  Map<String,String> parseUserWithJson(HttpServletRequest req) {
+        Map<String,String> map = new HashMap<>();
+        try {
+            map = new ObjectMapper().readValue(req.getInputStream(),Map.class);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
     /**
@@ -65,7 +90,8 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtTokenUtil.createToken(user.getUsername());
         HashMap<Object, Object> map = new HashMap<>();
         map.put("token",token);
-        map.put("user",user);
+
+        map.put("roles",user.getAuthorities().stream().map(item->{return item.getAuthority();}).collect(Collectors.toList()));
         map.put("loginName",user.getUsername());
         ResponseUtil.out(response, ReturnMessage.ok(map));
     }
@@ -77,5 +103,7 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         ResponseUtil.out(response, ReturnMessage.error("登录失败"));
     }
+
+
 
 }

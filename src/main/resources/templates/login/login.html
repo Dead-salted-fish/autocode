@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+
+    <script src="/js/vue-resource.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!--antd组件-->
+    <script src="/js/moment.js"></script>
+    <script src="/js/antd.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/antd.css"/>
+
+    <!--   解析模板-->
+    <script src="/js/httpVueLoader.js"></script>
+
+
+
+
+
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+
+</head>
+<body>
+<div id="app">
+    <div class="content">
+        <div class="content_input">
+            <div class="title">
+                <p>登录</p>
+            </div>
+            <a-input v-model="username"  placeholder="用户名"></a-input>
+            <a-input-password  v-model="password"   placeholder="密码"></a-input-password>
+            <div class="content_button">
+                <a-button type="primary" @click="login">登录</a-button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--    背景随机彩色-->
+<script src="/js/ribbon.js"></script>
+<script src="/js/index.js"></script>
+
+
+</body>
+<script type="text/javascript">
+    Vue.use(antd)
+    Vue.use(VueResource)
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                username: null,
+                password: null
+            }
+        },
+        methods: {
+            login(){
+                let user = {
+                    username:this.username === null||this.username === ''?null:this.username,
+                    password:this.password === null||this.password === ''?null:this.password,
+                }
+                this.$http.post('http://localhost:9090/login', user)
+                    .then((success) => {
+                       if(success.body.code==="200"){
+                           for ( const key in success.body.returnData){
+                               localStorage.setItem(key,success.body.returnData[key])
+                           }
+                           this.$message.success('成功');
+                       }else {
+                           this.$message.error(success.body.returnData);
+                       }
+
+                    }, (error) => {
+
+                        console.log('error',error);
+                    })
+            },
+        }
+    })
+</script>
+</html>

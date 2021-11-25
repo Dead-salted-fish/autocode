@@ -48,7 +48,11 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
-            ResponseUtil.out(response, ReturnMessage.error("鉴权失败"));
+            //ResponseUtil.out(response, ReturnMessage.error("鉴权失败"));
+            //chain.doFilter(request, response);
+//            response.setCharacterEncoding("utf-8");
+//            response.setContentType("text/html;charset=utf-8");
+//            response.sendRedirect("login");
         }
         chain.doFilter(request, response);
     }

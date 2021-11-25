@@ -31,9 +31,12 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
 //                   .antMatchers("/**").hasRole("admin")
+                .antMatchers("/login").permitAll()
                    .anyRequest().authenticated()
+
                 .and()
                 .formLogin()
+                .loginPage("/login")
                 .and()
                 .addFilterAfter(new TokenLoginFilter(authenticationManager(),jwtTokenUtil), LogoutFilter.class)
                 .addFilterAfter(new TokenAuthenticationFilter(authenticationManager()), LogoutFilter.class)
@@ -42,7 +45,7 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .disable()
                 .sessionManagement()
-                     .sessionCreationPolicy(SessionCreationPolicy.NEVER)  //禁用session
+                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //禁用session
                     ;
 
     }
@@ -54,6 +57,6 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
+       web.ignoring().antMatchers("/css/**","/js/**","/template/**","/favicon.ico");
     }
 }
