@@ -231,7 +231,7 @@ module.exports = {
         this.data = newData;
       }
     },
-    generateCode() {
+    async generateCode() {
       let attributeDate = [];
       this.selectedRowKeys.forEach(key => {
         const newData = [...this.data];
@@ -246,13 +246,12 @@ module.exports = {
         swagger: this.swaggerAnnotation,
         normalAnnotation: this.normalAnnotation,
       }
-      this.$http.post('http://localhost:9090/generateCode', returnDate)
-          .then((success) => {
-            this.$message.success('成功');
-          }, (error) => {
-            console.log(error);
-            this.$message.success('error');
-          })
+      let result = await httpPost('http://localhost:9090/generateCode', returnDate)
+      if (result && result.code === "200") {
+        this.$message.success('成功');
+      } else {
+        this.$message.error(result.message);
+      }
     },
     onTableSelectChange(selectedRowKeys) {
       console.log('selectedRowKeys changed: ', selectedRowKeys);
@@ -285,31 +284,28 @@ module.exports = {
         this.data = newData;
       }
     },
-    getTableMetaData() {
-      this.$http.get('http://localhost:9090/getTableMetaData', {params: {tableName: this.tableName}})
-          .then((success) => {
-            console.log(success.body);
-            this.data = success.body
-            this.data.forEach((item, index) => {
-              if (item.columnName !== 'version' && item.columnName !== 'creator' && item.columnName !== 'create_time' && item.columnName !== 'update_by' && item.columnName !== 'update_time') {
-                this.selectedRowKeys.push(index)
-              }
-            })
-
-          }, (error) => {
-            console.log(error);
-          })
+    async getTableMetaData() {
+      let result = await httpGet('http://localhost:9090/getTableMetaData', {tableName: this.tableName})
+      if (result && result.code === "200") {
+        this.data = result.returnData
+        this.data.forEach((item, index) => {
+          if (item.columnName !== 'version' && item.columnName !== 'creator' && item.columnName !== 'create_time' && item.columnName !== 'update_by' && item.columnName !== 'update_time') {
+            this.selectedRowKeys.push(index)
+          }
+        })
+      } else {
+        this.$message.error(result.message);
+      }
     },
 
-    getAllJavaType() {
-      this.$http.get('http://localhost:9090/getAllJavaType')
-          .then((success) => {
-            // console.log(success.body);
-            this.javaType = success.body
+    async getAllJavaType() {
+      let result = await httpGet('http://localhost:9090/getAllJavaType')
+      if (result && result.code === "200") {
+        this.javaType = result.returnData
+      } else {
+        this.$message.error(result.message);
+      }
 
-          }, (error) => {
-            console.log(error);
-          })
     },
 
     handleOk(e) {

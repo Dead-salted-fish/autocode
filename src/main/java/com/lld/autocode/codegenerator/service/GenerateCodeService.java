@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lld.autocode.codegenerator.entity.GenerateDate;
+import com.lld.autocode.utils.ReturnMessage;
 import net.sf.jsqlparser.schema.Table;
 import com.lld.autocode.codegenerator.entity.TableMetaData;
 
@@ -16,11 +17,11 @@ import java.util.List;
  */
 
 public interface GenerateCodeService extends IService<Table> {
-    IPage<Table> getAllTableName(String dataBaseName, Page<Table> page);
+    ReturnMessage getAllTableName(String dataBaseName, Page<Table> page);
 
-    List<TableMetaData> getTableMetaData(String tableName);
+    ReturnMessage getTableMetaData(String tableName);
 
-    List<String> getAllJavaTypePackage();
+    ReturnMessage getAllJavaTypePackage();
 
-    void generateCode(GenerateDate date) throws Exception;
+    ReturnMessage generateCode(GenerateDate date) throws Exception;
 }

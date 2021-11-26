@@ -14,7 +14,7 @@
     <!--   解析模板-->
     <script src="/js/httpVueLoader.js"></script>
 
-
+    <script src="/js/httpApi.js"></script>
 
 
 
@@ -55,26 +55,22 @@
             }
         },
         methods: {
-            login(){
+            async login(){
                 let user = {
                     username:this.username === null||this.username === ''?null:this.username,
                     password:this.password === null||this.password === ''?null:this.password,
                 }
-                this.$http.post('http://localhost:9090/login', user)
-                    .then((success) => {
-                       if(success.body.code==="200"){
-                           for ( const key in success.body.returnData){
-                               localStorage.setItem(key,success.body.returnData[key])
-                           }
-                           this.$message.success('成功');
-                       }else {
-                           this.$message.error(success.body.returnData);
-                       }
+                let  result =  await httpPost('/login', user)
+                if(result&&result.code==="200"){
+                    for ( const key in result.returnData){
+                        localStorage.setItem(key,result.returnData[key])
+                    }
+                    this.$message.success('成功');
+                    window.location.href='/autoCodeMain'
+                }else {
+                    this.$message.error(result.message);
+                }
 
-                    }, (error) => {
-
-                        console.log('error',error);
-                    })
             },
         }
     })

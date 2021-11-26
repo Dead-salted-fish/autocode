@@ -55,6 +55,12 @@ public class ReturnMessage implements Serializable {
         return  returnMessage;
     }
 
+    public  static  ReturnMessage ok(){
+        ReturnMessage returnMessage = new ReturnMessage();
+        returnMessage.setCode("200");
+        return  returnMessage;
+    }
+
     public  static  ReturnMessage error(Object object){
         ReturnMessage returnMessage = new ReturnMessage();
         returnMessage.setCode("400");

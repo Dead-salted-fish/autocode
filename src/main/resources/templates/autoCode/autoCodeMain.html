@@ -7,6 +7,7 @@
 <script src="/js/httpVueLoader.js"></script>
 
 <link rel="stylesheet" type="text/css" href="/css/antd.css"/>
+<script src="/js/httpApi.js"></script>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -92,17 +93,19 @@
             initTable() {
                 this.getTableData(this.pagination.pageNo,this.pagination.pageSize)
             },
-            getTableData(current,pageSize) {
-                this.$http.get('http://localhost:9090/getAllTableName',{params:{page:current,pageSize:pageSize}})
-                    .then((success) => {
-                        console.log(success.body);
-                        this.data = success.body.records;
-                        this.pagination.total = success.body.total
-                        this.pagination.current = success.body.current
-                        console.log("success.body");
-                    }, (error) => {
-                        console.log(error);
-                    })
+
+            async getTableData(current,pageSize) {
+                let  result  = await   httpGet('http://localhost:9090/getAllTableName',{page:current,pageSize:pageSize});
+
+                if(result&&result.code==="200"){
+
+                    this.data = result.returnData.records;
+                    this.pagination.total = result.returnData.total
+                    this.pagination.current = result.returnData.current
+                }else {
+                    this.$message.error(result.message);
+                }
+
             },
             onShowSizeChange(current,pageSize) {
                 this.pagination.current = 1

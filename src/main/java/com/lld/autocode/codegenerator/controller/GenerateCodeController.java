@@ -1,12 +1,11 @@
 package com.lld.autocode.codegenerator.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lld.autocode.codegenerator.entity.GenerateDate;
-import com.lld.autocode.codegenerator.entity.TableMetaData;
 import com.lld.autocode.codegenerator.service.impl.GenerateCodeServiceImpl;
+import com.lld.autocode.utils.ReturnMessage;
 import net.sf.jsqlparser.schema.Table;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,50 +31,35 @@ public class GenerateCodeController {
 
     @GetMapping("/getAllTableName")
     @ResponseBody
-    public String getAllTableName(Long page,Long pageSize){
+    public ReturnMessage getAllTableName(Long page, Long pageSize){
         Page<Table> tablePage = new Page<>(page,pageSize);
-        IPage<Table> core = generateCodeService.getAllTableName("core", tablePage);
-        String str = null;
-        try {
-            str = objectMapper.writeValueAsString(core);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return str;
+
+
+        return generateCodeService.getAllTableName("core", tablePage);
     }
 
     @GetMapping("/getTableMetaData")
     @ResponseBody
-    public String getTableMetaData(String tableName){
-        List<TableMetaData> tableMetaDataList = generateCodeService.getTableMetaData(tableName);
-        String str = null;
-        try {
-            str = objectMapper.writeValueAsString(tableMetaDataList);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return str;
+    public ReturnMessage getTableMetaData(String tableName){
+
+
+        return generateCodeService.getTableMetaData(tableName);
     }
 
     @GetMapping("/getAllJavaType")
     @ResponseBody
-    public String getAllJavaType(){
-        List<String> tableMetaDataList = generateCodeService.getAllJavaTypePackage();
-        String str = null;
-        try {
-            str = objectMapper.writeValueAsString(tableMetaDataList);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return str;
+    public ReturnMessage getAllJavaType(){
+
+
+        return generateCodeService.getAllJavaTypePackage();
     }
 
     @PostMapping("/generateCode")
     @ResponseBody
-    public Object generateCode(@RequestBody GenerateDate date) throws Exception {
-        System.out.println(objectMapper.writeValueAsString(date));
-        generateCodeService.generateCode(date);
-        return "success";
+    public ReturnMessage generateCode(@RequestBody GenerateDate date) throws Exception {
+
+
+        return  generateCodeService.generateCode(date);
     }
 
 

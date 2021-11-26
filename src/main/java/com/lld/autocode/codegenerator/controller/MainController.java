@@ -4,6 +4,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 
 
 /**
@@ -27,8 +29,13 @@ public class MainController {
 
     @GetMapping("/testhttp")
     @ResponseBody
-    public String testhttp(){
-        System.out.println("enter");
+    public String testhttp(HttpServletRequest req){
+        Enumeration<String> headerNames = req.getHeaderNames();
+       while(headerNames.hasMoreElements()){
+           String headerpart = headerNames.nextElement();
+           System.out.println(headerpart+"=="+req.getHeader(headerpart));
+       }
+//        System.out.println("enter");
         return "123";
     }
 }

@@ -66,7 +66,7 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         if (token != null && !"".equals(token.trim())) {
             // 从Token中解密获取用户名
             String userName = JwtTokenUtil.getUserNameFromToken(token);
-
+            System.out.println("userName"+userName);
             if (userName != null) {
 //                // 从Token中解密获取用户角色
 //                String role = JwtTokenUtil.getUserRoleFromToken(token);

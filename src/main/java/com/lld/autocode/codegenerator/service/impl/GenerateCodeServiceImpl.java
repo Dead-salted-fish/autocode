@@ -11,6 +11,7 @@ import com.lld.autocode.codegenerator.generatecode.fh.GenerateMain;
 
 import com.lld.autocode.codegenerator.mapper.TableMapper;
 import com.lld.autocode.codegenerator.service.GenerateCodeService;
+import com.lld.autocode.utils.ReturnMessage;
 import net.sf.jsqlparser.schema.Table;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +34,13 @@ public class GenerateCodeServiceImpl extends ServiceImpl<TableMapper, Table> imp
     private TableMapper tableMapper;
 
     @Override
-    public IPage<Table> getAllTableName(String dataBaseName, Page<Table> page) {
-        return this.baseMapper.getAllTableName(page);
+    public ReturnMessage getAllTableName(String dataBaseName, Page<Table> page) {
+        IPage<Table> allTableName = this.baseMapper.getAllTableName(page);
+       return ReturnMessage.ok(allTableName);
     }
 
     @Override
-    public List<TableMetaData> getTableMetaData(String tableName) {
+    public ReturnMessage getTableMetaData(String tableName) {
         List<TableMetaData> tableMetaData = this.baseMapper.getTableMetaData(tableName);
         List<TypeMapping> allTypeMapping = this.baseMapper.getAllTypeMapping();
         Map<String,String> typeMappingMap = new HashMap<>();
@@ -48,17 +50,18 @@ public class GenerateCodeServiceImpl extends ServiceImpl<TableMapper, Table> imp
         for(TableMetaData item:tableMetaData){
             item.setJavaType(typeMappingMap.get(item.getDataType()));
         }
-        return tableMetaData;
+        return ReturnMessage.ok(tableMetaData);
     }
 
     @Override
-    public List<String> getAllJavaTypePackage() {
+    public ReturnMessage getAllJavaTypePackage() {
 
-        return  this.baseMapper.getAllJavaTypePackage();
+        return ReturnMessage.ok(this.baseMapper.getAllJavaTypePackage()) ;
     }
 
     @Override
-    public void generateCode(GenerateDate date) throws Exception {
+    public ReturnMessage generateCode(GenerateDate date) throws Exception {
              new GenerateMain().generate(date,tableMapper);
+           return  ReturnMessage.ok();
     }
 }
