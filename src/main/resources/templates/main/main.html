@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+
+    <script src="/js/vue-resource.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!--antd组件-->
+    <script src="/js/moment.js"></script>
+    <script src="/js/antd.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/antd.css"/>
+
+    <!--   解析模板-->
+    <script src="/js/httpVueLoader.js"></script>
+    <!--    vue路由-->
+    <script src="/js/vue-router.js"></script>
+    <script src="/js/httpApi.js"></script>
+
+
+
+</head>
+
+<body>
+<div id="app" style="height: 100%">
+    <a-layout id="components-layout-demo-custom-trigger" style="height: 100%">
+        <a-layout-sider v-model="collapsed" :trigger="null" collapsible width="240">
+            <div class="logo"></div>
+            <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
+                <a-menu-item key="1">
+<!--                    <a-icon type="user"/>-->
+                    <router-link to="/autoCode">autoCode</router-link>
+                </a-menu-item>
+<!--                <a-menu-item key="2">-->
+<!--&lt;!&ndash;                    <a-icon type="video-camera"/>&ndash;&gt;-->
+<!--                    <router-link to="/bar">Go to Bar</router-link>-->
+<!--                </a-menu-item>-->
+<!--                <a-menu-item key="3">-->
+<!--&lt;!&ndash;                    <a-icon type="upload"/>&ndash;&gt;-->
+<!--                    <router-link to="/gengrate">Go to gengrate</router-link>-->
+<!--                </a-menu-item>-->
+            </a-menu>
+        </a-layout-sider>
+        <a-layout>
+
+            <a-layout-header style="background: #fff; padding: 0">
+                <a-icon
+                        class="trigger"
+                        :type="collapsed ? 'menu-unfold' : 'menu-fold'"
+                        @click="() => (collapsed = !collapsed)"
+                />
+            </a-layout-header>
+
+            <a-layout-content
+                    :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '280px%' }"
+            >
+                <router-view></router-view>
+            </a-layout-content>
+
+        </a-layout>
+
+    </a-layout>
+</div>
+
+<style>
+    #components-layout-demo-custom-trigger .trigger {
+        font-size: 18px;
+        line-height: 64px;
+        padding: 0 24px;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    #components-layout-demo-custom-trigger .trigger:hover {
+        color: #1890ff;
+    }
+
+    #components-layout-demo-custom-trigger .logo {
+        height: 32px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 16px;
+    }
+</style>
+</body>
+
+<script type="text/javascript">
+    Vue.use(antd)
+    Vue.use(VueResource)
+    const router = new VueRouter()
+
+    new Vue({
+        el: '#app',
+        components: {
+            // 'gengrate': httpVueLoader('/template/generate.vue')
+        },
+        data() {
+            return {
+                collapsed: false,
+            }
+        },
+        created: function () {
+            this.getRoute()
+        },
+        router,
+        methods: {
+            username() {
+                // We will see what `params` is shortly
+                console.log(this.$route.params)
+
+            },
+            async getRoute() {
+                let result = await httpGet("/getRoute")
+                router.addRoute({path: '/autoCode', component: httpVueLoader('/template/autoCodeMain.vue')})
+                // // router.addRoute({path: '/foo', component: {template: '<div>foo</div>'}})
+                // router.addRoute({path: '/bar', component: {template: '<div>bar</div>'}})
+                console.log('result', result)
+            }
+        }
+    })
+
+</script>
+
+</html>

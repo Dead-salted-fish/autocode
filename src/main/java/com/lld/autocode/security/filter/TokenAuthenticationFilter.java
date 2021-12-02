@@ -43,6 +43,7 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         try {
             authentication = getAuthentication(request);
         } catch (Exception e) {
+            e.printStackTrace();
             ResponseUtil.out(response, ReturnMessage.error(e.getMessage()));
         }
         if (authentication != null) {

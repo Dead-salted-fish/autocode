@@ -5,7 +5,18 @@
 <mapper namespace="com.lld.autocode.codegenerator.mapper.TableMapper">
 
     <select id="getAllTableName"  resultType="com.lld.autocode.codegenerator.entity.Table" >
-        select table_name  from information_schema.tables where table_schema= (select DATABASE())
+        select table_name
+        from information_schema.tables
+        <where>
+            <if test="true">
+               and table_schema= (select DATABASE())
+            </if>
+
+            <if test="tableName != null">
+                and table_name like '%${tableName}%'
+            </if>
+        </where>
+
     </select>
 
     <select id="getTableMetaData" parameterType="string"  resultType="com.lld.autocode.codegenerator.entity.TableMetaData" >

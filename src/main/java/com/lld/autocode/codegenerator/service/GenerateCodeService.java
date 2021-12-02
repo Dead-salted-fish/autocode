@@ -17,7 +17,7 @@ import java.util.List;
  */
 
 public interface GenerateCodeService extends IService<Table> {
-    ReturnMessage getAllTableName(String dataBaseName, Page<Table> page);
+    ReturnMessage getAllTableName(String dataBaseName, Page<Table> page,String tableName);
 
     ReturnMessage getTableMetaData(String tableName);
 

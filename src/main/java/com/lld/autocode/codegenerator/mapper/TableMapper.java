@@ -21,7 +21,7 @@ import java.util.List;
 @Mapper
 public interface TableMapper extends BaseMapper<Table> {
 
-    IPage<Table> getAllTableName(Page<Table> page);
+    IPage<Table> getAllTableName(Page<Table> page,@Param("tableName") String tableName);
 
     List<TableMetaData> getTableMetaData(@Param("tableName") String tableName);
 

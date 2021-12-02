@@ -26,6 +26,11 @@ public class MainController {
         return "/autoCode/autoCodeMain";
     }
 
+    @GetMapping("/main")
+    public String main(){
+        return "/main/main";
+    }
+
 
     @GetMapping("/testhttp")
     @ResponseBody
@@ -37,5 +42,20 @@ public class MainController {
        }
 //        System.out.println("enter");
         return "123";
+    }
+
+    @GetMapping("/test")
+    public String test(HttpServletRequest req){
+
+//        System.out.println("enter");
+        return "testroute";
+    }
+
+    @GetMapping("/getRoute")
+    @ResponseBody
+    public String getRoute(HttpServletRequest req){
+
+//        System.out.println("enter");
+        return "route";
     }
 }

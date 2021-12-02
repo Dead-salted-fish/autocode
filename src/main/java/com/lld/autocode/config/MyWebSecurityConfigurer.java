@@ -32,21 +32,21 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
 //                   .antMatchers("/**").hasRole("admin")
                 .antMatchers("/login").permitAll()
-                   .anyRequest().authenticated()
+                .anyRequest().authenticated()
 
                 .and()
                 .formLogin()
                 .loginPage("/login")
                 .and()
-                .addFilterAfter(new TokenLoginFilter(authenticationManager(),jwtTokenUtil), LogoutFilter.class)
+                .addFilterAfter(new TokenLoginFilter(authenticationManager(), jwtTokenUtil), LogoutFilter.class)
                 .addFilterAfter(new TokenAuthenticationFilter(authenticationManager()), LogoutFilter.class)
                 .httpBasic()
                 .and()
                 .csrf()
-                    .disable()
+                .disable()
                 .sessionManagement()
-                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //禁用session
-                    ;
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //禁用session
+        ;
 
     }
 
@@ -57,6 +57,13 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-       web.ignoring().antMatchers("/css/**","/js/**","/template/**","/favicon.ico","/testhttp","/autoCodeMain");
+        web.ignoring().antMatchers("/css/**",
+                "/js/**",
+                "/template/**",
+                "/favicon.ico",
+                "/testhttp",
+                "/autoCodeMain",
+                "/main",
+                "/test");
     }
 }

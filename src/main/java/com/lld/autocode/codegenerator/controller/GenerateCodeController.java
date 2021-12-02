@@ -31,11 +31,11 @@ public class GenerateCodeController {
 
     @GetMapping("/getAllTableName")
     @ResponseBody
-    public ReturnMessage getAllTableName(Long page, Long pageSize){
+    public ReturnMessage getAllTableName(Long page, Long pageSize,String tableName){
         Page<Table> tablePage = new Page<>(page,pageSize);
 
 
-        return generateCodeService.getAllTableName("core", tablePage);
+        return generateCodeService.getAllTableName("core", tablePage,tableName);
     }
 
     @GetMapping("/getTableMetaData")

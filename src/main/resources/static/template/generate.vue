@@ -1,7 +1,9 @@
 <template>
   <a-modal
-      title="元数据"
+      :title="tableName"
       :visible="visible"
+      cancel-text="取消"
+      ok-text="确认生成"
       @ok="handleOk"
       @cancel="handleCancel"
       width="80%"
@@ -94,12 +96,12 @@
 
       <a-form-item>
         <a-space>
-          <a-button type="primary" @click="() => test()">
-            test
-          </a-button>
-          <a-button type="primary" @click="generateCode">
-            生成
-          </a-button>
+<!--          <a-button type="primary" @click="() => test()">-->
+<!--            test-->
+<!--          </a-button>-->
+<!--          <a-button type="primary" @click="generateCode">-->
+<!--            生成-->
+<!--          </a-button>-->
 
         </a-space>
       </a-form-item>
@@ -232,6 +234,7 @@ module.exports = {
       }
     },
     async generateCode() {
+      let success = false
       let attributeDate = [];
       this.selectedRowKeys.forEach(key => {
         const newData = [...this.data];
@@ -248,10 +251,12 @@ module.exports = {
       }
       let result = await httpPost('http://localhost:9090/generateCode', returnDate)
       if (result && result.code === "200") {
+        success = true
         this.$message.success('成功');
       } else {
         this.$message.error(result.message);
       }
+       return success;
     },
     onTableSelectChange(selectedRowKeys) {
       console.log('selectedRowKeys changed: ', selectedRowKeys);
@@ -308,12 +313,13 @@ module.exports = {
 
     },
 
-    handleOk(e) {
-      console.log('Clicked ok button');
-      this.close()
+     async handleOk(e) {
+    let result =  await this.generateCode()
+       if(result) {
+         this.close()
+       }
     },
     handleCancel(e) {
-      console.log('Clicked cancel button');
       this.close()
     },
   }
