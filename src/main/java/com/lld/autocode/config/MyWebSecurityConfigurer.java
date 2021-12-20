@@ -4,6 +4,7 @@ package com.lld.autocode.config;
 import com.lld.autocode.security.filter.TokenAuthenticationFilter;
 import com.lld.autocode.security.filter.TokenLoginFilter;
 import com.lld.autocode.utils.JwtTokenUtil;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +27,9 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Resource
     private JwtTokenUtil jwtTokenUtil;
 
+    @Resource
+    private RedisTemplate redisTemplate;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -38,8 +42,8 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .and()
-                .addFilterAfter(new TokenLoginFilter(authenticationManager(), jwtTokenUtil), LogoutFilter.class)
-                .addFilterAfter(new TokenAuthenticationFilter(authenticationManager()), LogoutFilter.class)
+                .addFilterAfter(new TokenLoginFilter(authenticationManager(), jwtTokenUtil,redisTemplate), LogoutFilter.class)
+                .addFilterAfter(new TokenAuthenticationFilter(authenticationManager(),redisTemplate), LogoutFilter.class)
                 .httpBasic()
                 .and()
                 .csrf()
@@ -64,6 +68,8 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 "/testhttp",
                 "/autoCodeMain",
                 "/main",
+                "/login",
+                "/captcha",
                 "/test");
     }
 }

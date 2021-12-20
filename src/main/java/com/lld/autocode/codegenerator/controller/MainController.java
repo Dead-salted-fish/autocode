@@ -51,11 +51,5 @@ public class MainController {
         return "testroute";
     }
 
-    @GetMapping("/getRoute")
-    @ResponseBody
-    public String getRoute(HttpServletRequest req){
 
-//        System.out.println("enter");
-        return "route";
-    }
 }

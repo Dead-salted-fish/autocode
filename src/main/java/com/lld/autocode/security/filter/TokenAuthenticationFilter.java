@@ -4,6 +4,7 @@ package com.lld.autocode.security.filter;
 import com.lld.autocode.utils.JwtTokenUtil;
 import com.lld.autocode.utils.ResponseUtil;
 import com.lld.autocode.utils.ReturnMessage;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName: TokenAuthenticationFilter
@@ -27,35 +29,35 @@ import java.util.Collection;
  * @Version 1.0
  */
 public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
+    private RedisTemplate redisTemplate;
 
-    public TokenAuthenticationFilter(AuthenticationManager authManager) {
+    public TokenAuthenticationFilter(AuthenticationManager authManager, RedisTemplate redisTemplate) {
         super(authManager);
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        logger.info("=================" + request.getRequestURI());
-        //不需要鉴权
-        if (request.getRequestURI().indexOf("index") != -1) {
-            chain.doFilter(request, response);
-        }
+        System.out.println("URL======"+request.getRequestURI());
         UsernamePasswordAuthenticationToken authentication = null;
         try {
             authentication = getAuthentication(request);
         } catch (Exception e) {
-            e.printStackTrace();
-            ResponseUtil.out(response, ReturnMessage.error(e.getMessage()));
+            String url =  request.getRequestURI();
+            if(url.startsWith("/main")){
+                chain.doFilter(request, response);
+            }else {
+                e.printStackTrace();
+                ResponseUtil.out(response, ReturnMessage.error(e.getMessage()));
+            }
         }
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            chain.doFilter(request, response);
         } else {
-            //ResponseUtil.out(response, ReturnMessage.error("鉴权失败"));
-            //chain.doFilter(request, response);
-//            response.setCharacterEncoding("utf-8");
-//            response.setContentType("text/html;charset=utf-8");
-//            response.sendRedirect("login");
+            ResponseUtil.out(response, ReturnMessage.error("鉴权失败"));
         }
-        chain.doFilter(request, response);
+
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
@@ -66,24 +68,27 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         }
         if (token != null && !"".equals(token.trim())) {
             // 从Token中解密获取用户名
+            System.out.println(token);
+            Long userId = JwtTokenUtil.getUserRoIdFromToken(token);
+            Long userRoIdFromToken = userId ==null?null:userId;
+            String tokenFromRedis = (String)redisTemplate.opsForValue().get(userRoIdFromToken);
+            if(tokenFromRedis ==null){
+                throw new RuntimeException("token已过期");
+            }else if(!tokenFromRedis.equals(token)){
+                throw new RuntimeException("无效token");
+            }
+
             String userName = JwtTokenUtil.getUserNameFromToken(token);
-            System.out.println("userName"+userName);
             if (userName != null) {
-//                // 从Token中解密获取用户角色
-//                String role = JwtTokenUtil.getUserRoleFromToken(token);
-//                // 将ROLE_XXX,ROLE_YYY格式的角色字符串转换为数组
-//                String[] roles = role.split(",");
-//                Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//                for (String s : roles) {
-//                    authorities.add(new SimpleGrantedAuthority(s));
-//                }
+                //获取角色，系统暂无角色权鉴，此处暂时做空处理
                 Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 //authorities.add(new SimpleGrantedAuthority("admin"));
+                redisTemplate.expire(userRoIdFromToken,60*30,TimeUnit.SECONDS);
                 return new UsernamePasswordAuthenticationToken(userName, token, authorities);
             }
             return null;
         }
-        return null;
+        throw new RuntimeException("token为空");
     }
 }
 

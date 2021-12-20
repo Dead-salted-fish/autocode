@@ -31,10 +31,10 @@
 <!--                    <a-icon type="user"/>-->
                     <router-link to="/autoCode">autoCode</router-link>
                 </a-menu-item>
-<!--                <a-menu-item key="2">-->
-<!--&lt;!&ndash;                    <a-icon type="video-camera"/>&ndash;&gt;-->
-<!--                    <router-link to="/bar">Go to Bar</router-link>-->
-<!--                </a-menu-item>-->
+                <a-menu-item key="2">
+<!--                    <a-icon type="video-camera"/>-->
+                    <router-link to="/bar">Go to Bar</router-link>
+                </a-menu-item>
 <!--                <a-menu-item key="3">-->
 <!--&lt;!&ndash;                    <a-icon type="upload"/>&ndash;&gt;-->
 <!--                    <router-link to="/gengrate">Go to gengrate</router-link>-->
@@ -84,6 +84,7 @@
 </body>
 
 <script type="text/javascript">
+
     Vue.use(antd)
     Vue.use(VueResource)
     const router = new VueRouter()
@@ -110,9 +111,24 @@
             },
             async getRoute() {
                 let result = await httpGet("/getRoute")
-                router.addRoute({path: '/autoCode', component: httpVueLoader('/template/autoCodeMain.vue')})
+                router.addRoute({path: '/autoCode',
+                    component: httpVueLoader('/template/autoCodeMain.vue'),
+                })
+
+                router.addRoute({path: '/',
+                    redirect:'/autoCode',
+                })
+                router.beforeEach((to, from, next) => {
+                    if (window.localStorage.getItem("token")){
+                        next()
+                    }
+                    else {
+                        this.$message.error('token过期');
+                        window.location.href='/login'
+                    }
+                })
                 // // router.addRoute({path: '/foo', component: {template: '<div>foo</div>'}})
-                // router.addRoute({path: '/bar', component: {template: '<div>bar</div>'}})
+                router.addRoute({path: '/bar', component: {template: '<div>bar</div>'}})
                 console.log('result', result)
             }
         }

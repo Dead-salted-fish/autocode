@@ -21,6 +21,14 @@ public class JwtTokenUtil {
         return token;
     }
 
+    public static String createToken(String userName, Long id) {
+        String token = Jwts.builder().setSubject(userName)
+                .claim("userId", id)
+                .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
+                .signWith(SignatureAlgorithm.HS512, tokenSignKey).compressWith(CompressionCodecs.GZIP).compact();
+        return token;
+    }
+
     public static String createToken(String userName, String role) {
         String token = Jwts.builder().setSubject(userName)
                 .claim(userRoleKey, role)
@@ -37,6 +45,11 @@ public class JwtTokenUtil {
     public static String getUserRoleFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token).getBody();
         return claims.get(userRoleKey).toString();
+    }
+
+    public static Long getUserRoIdFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token).getBody();
+        return claims.get("userId")!=null? Long.valueOf(claims.get("userId").toString()):null;
     }
 
 }

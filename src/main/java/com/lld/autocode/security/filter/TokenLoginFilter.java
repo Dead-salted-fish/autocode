@@ -8,6 +8,7 @@ import com.lld.autocode.utils.JwtTokenUtil;
 import com.lld.autocode.utils.ResponseUtil;
 import com.lld.autocode.utils.ReturnMessage;
 import com.sun.javafx.collections.MappingChange;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -34,16 +36,18 @@ import java.util.stream.Collectors;
  */
 
 public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
+    private RedisTemplate redisTemplate;
 
     private AuthenticationManager authenticationManager;
 
     private JwtTokenUtil jwtTokenUtil;
 
-    public TokenLoginFilter(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
+    public TokenLoginFilter(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,RedisTemplate redisTemplate) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.redisTemplate = redisTemplate;
         this.setPostOnly(false);
-        this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/login", "POST"));
+        this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/userlogin", "POST"));
     }
 
     @Override
@@ -87,12 +91,15 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication auth) throws IOException, ServletException {
         //User user = (User)auth.getPrincipal();
         User user  = (User) auth.getPrincipal();
-        String token = jwtTokenUtil.createToken(user.getUsername());
+        String token = jwtTokenUtil.createToken(user.getUsername(),user.getId());
         HashMap<Object, Object> map = new HashMap<>();
         map.put("token",token);
 
         map.put("roles",user.getAuthorities().stream().map(item->{return item.getAuthority();}).collect(Collectors.toList()));
         map.put("loginName",user.getUsername());
+
+        redisTemplate.opsForValue().set(user.getId(),token,60*30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(user.getUsername(),user,60*30, TimeUnit.SECONDS);
         ResponseUtil.out(response, ReturnMessage.ok(map));
     }
 

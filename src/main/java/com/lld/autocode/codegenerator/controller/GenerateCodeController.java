@@ -8,10 +8,7 @@ import com.lld.autocode.codegenerator.service.impl.GenerateCodeServiceImpl;
 import com.lld.autocode.utils.ReturnMessage;
 import net.sf.jsqlparser.schema.Table;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,7 +18,7 @@ import java.util.List;
  * @author: wzl
  * @date 2021/9/22 15:29
  */
-@Controller
+@RestController
 public class GenerateCodeController {
     @Resource
     private GenerateCodeServiceImpl generateCodeService;
@@ -30,7 +27,6 @@ public class GenerateCodeController {
     private ObjectMapper objectMapper;
 
     @GetMapping("/getAllTableName")
-    @ResponseBody
     public ReturnMessage getAllTableName(Long page, Long pageSize,String tableName){
         Page<Table> tablePage = new Page<>(page,pageSize);
 
@@ -39,7 +35,6 @@ public class GenerateCodeController {
     }
 
     @GetMapping("/getTableMetaData")
-    @ResponseBody
     public ReturnMessage getTableMetaData(String tableName){
 
 
@@ -47,7 +42,6 @@ public class GenerateCodeController {
     }
 
     @GetMapping("/getAllJavaType")
-    @ResponseBody
     public ReturnMessage getAllJavaType(){
 
 
@@ -55,9 +49,7 @@ public class GenerateCodeController {
     }
 
     @PostMapping("/generateCode")
-    @ResponseBody
     public ReturnMessage generateCode(@RequestBody GenerateDate date) throws Exception {
-
 
         return  generateCodeService.generateCode(date);
     }

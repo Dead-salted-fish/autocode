@@ -36,6 +36,7 @@ public class GenerateCodeServiceImpl extends ServiceImpl<TableMapper, Table> imp
     @Override
     public ReturnMessage getAllTableName(String dataBaseName, Page<Table> page,String tableName) {
         IPage<Table> allTableName = this.baseMapper.getAllTableName(page,tableName);
+
        return ReturnMessage.ok(allTableName);
     }
 

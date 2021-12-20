@@ -59,9 +59,7 @@
                 columns,
                 visible:false,
                 tableName:null,
-                data: [{
-                    tableName: 'tableName1',
-                }],
+                data: [],
                 pagination: {
                     pageNo: 1,
                     pageSize: 10, // 默认每页显示数量
@@ -103,7 +101,7 @@
                     this.pagination.total = result.returnData.total
                     this.pagination.current = result.returnData.current
                 }else {
-                    this.$message.error(result.message);
+                    this.$message.error(result.returnData);
                 }
 
             },

@@ -126,7 +126,7 @@ module.exports = {
         this.pagination.total = result.returnData.total
         this.pagination.current = result.returnData.current
       } else {
-        this.$message.error(result.message);
+        this.$message.error(result.returnData);
       }
 
     },

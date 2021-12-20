@@ -31,4 +31,5 @@ public interface TableMapper extends BaseMapper<Table> {
 
     List<JavaTypeDo> getAllJavaType();
 
+
 }
