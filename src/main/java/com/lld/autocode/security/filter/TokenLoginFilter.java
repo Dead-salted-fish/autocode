@@ -10,6 +10,7 @@ import com.lld.autocode.utils.ReturnMessage;
 import com.sun.javafx.collections.MappingChange;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -42,7 +43,9 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private JwtTokenUtil jwtTokenUtil;
 
-    public TokenLoginFilter(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,RedisTemplate redisTemplate) {
+    private boolean postOnly = true;
+
+    public TokenLoginFilter(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil, RedisTemplate redisTemplate) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenUtil = jwtTokenUtil;
         this.redisTemplate = redisTemplate;
@@ -52,37 +55,20 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
-
-        String contentType = req.getHeader("Content-Type");
-
-        Map<String,String> userMap = new HashMap<>();
-
-        if(contentType.contains("application/json")){
-            userMap =  parseUserWithJson(req);
-        }else if (contentType.contains("application/x-www-form-urlencoded")){
-            userMap =  parseUserWithForm(req);
+        if (postOnly && !req.getMethod().equals("POST")) {
+            throw new AuthenticationServiceException(
+                    "Authentication method not supported: " + req.getMethod());
         }
-            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userMap.get("username"), userMap.get("password"), new ArrayList<>()));
+
+        String username = req.getParameter("username").trim();
+        String password = req.getParameter("password");
+
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(username, password);
+
+        return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
     }
 
-    private Map<String, String> parseUserWithForm(HttpServletRequest req) {
-
-        Map<String, String> map = new HashMap<>();
-        map.put("username",req.getParameter("username")) ;
-        map.put("password",req.getParameter("password")) ;
-     return map;
-    }
-
-    private  Map<String,String> parseUserWithJson(HttpServletRequest req) {
-        Map<String,String> map = new HashMap<>();
-        try {
-            map = new ObjectMapper().readValue(req.getInputStream(),Map.class);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
 
     /**
      * 登录成功
@@ -90,16 +76,18 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication auth) throws IOException, ServletException {
         //User user = (User)auth.getPrincipal();
-        User user  = (User) auth.getPrincipal();
-        String token = jwtTokenUtil.createToken(user.getUsername(),user.getId());
+        User user = (User) auth.getPrincipal();
+        String token = jwtTokenUtil.createToken(user.getUsername(), user.getId());
         HashMap<Object, Object> map = new HashMap<>();
-        map.put("token",token);
+        map.put("token", token);
 
-        map.put("roles",user.getAuthorities().stream().map(item->{return item.getAuthority();}).collect(Collectors.toList()));
-        map.put("loginName",user.getUsername());
+        map.put("roles", user.getAuthorities().stream().map(item -> {
+            return item.getAuthority();
+        }).collect(Collectors.toList()));
+        map.put("loginName", user.getUsername());
 
-        redisTemplate.opsForValue().set(user.getId(),token,60*30, TimeUnit.SECONDS);
-        redisTemplate.opsForValue().set(user.getUsername(),user,60*30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(user.getId(), token, 60 * 30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(user.getUsername(), user, 60 * 30, TimeUnit.SECONDS);
         ResponseUtil.out(response, ReturnMessage.ok(map));
     }
 
@@ -110,7 +98,6 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
         ResponseUtil.out(response, ReturnMessage.error("登录失败"));
     }
-
 
 
 }

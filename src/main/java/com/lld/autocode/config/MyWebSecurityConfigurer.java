@@ -1,11 +1,11 @@
 package com.lld.autocode.config;
 
 
+import com.lld.autocode.security.filter.CaptchaFilter;
 import com.lld.autocode.security.filter.TokenAuthenticationFilter;
 import com.lld.autocode.security.filter.TokenLoginFilter;
 import com.lld.autocode.utils.JwtTokenUtil;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -41,15 +41,20 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login")
+//                .successForwardUrl("/testLoginSuccesss") //转发到/testLoginSuccesss 依然要经过TokenAuthenticationFilter验证token
                 .and()
-                .addFilterAfter(new TokenLoginFilter(authenticationManager(), jwtTokenUtil,redisTemplate), LogoutFilter.class)
-                .addFilterAfter(new TokenAuthenticationFilter(authenticationManager(),redisTemplate), LogoutFilter.class)
+
+                .addFilterAfter(new TokenLoginFilter(authenticationManager(), jwtTokenUtil, redisTemplate), LogoutFilter.class)
+                .addFilterAfter(new TokenAuthenticationFilter(authenticationManager(), redisTemplate), LogoutFilter.class)
+                .addFilterBefore(new CaptchaFilter(), TokenLoginFilter.class)//验证码校验
                 .httpBasic()
+
                 .and()
                 .csrf()
                 .disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  //禁用session
+
         ;
 
     }
@@ -71,5 +76,6 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 "/login",
                 "/captcha",
                 "/test");
+
     }
 }

@@ -7,6 +7,7 @@ import com.xiaoju.uemc.tinyid.client.utils.TinyId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -50,6 +51,7 @@ public class LoginController {
     @GetMapping("/captcha")
     @ResponseBody
     public ReturnMessage captcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
         response.setContentType("image/jpeg");
         //验证码文本
         String text = producer.createText();
@@ -62,5 +64,6 @@ public class LoginController {
         redisTemplate.opsForValue().set("captcha"+tinyid.toString(),text,60*5, TimeUnit.SECONDS);
         return ReturnMessage.ok(new SysCaptcha(imgBase64,tinyid.toString()));
     }
+
 
 }
