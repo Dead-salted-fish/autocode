@@ -1,5 +1,7 @@
 package com.lld.autocode.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +15,8 @@ import java.util.List;
  * @author: wzl
  * @date 2021/10/26 13:48
  */
-public class User implements UserDetails {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class User implements UserDetails  {
     private Long id;
     private String username;
     private String password;
@@ -21,6 +24,7 @@ public class User implements UserDetails {
 
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> list = new ArrayList<>();
         for(String role:roles){
@@ -65,21 +69,25 @@ public class User implements UserDetails {
 
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }

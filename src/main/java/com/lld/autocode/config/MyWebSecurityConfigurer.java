@@ -73,6 +73,7 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 "/testhttp",
                 "/autoCodeMain",
                 "/main",
+                "/",
                 "/login",
                 "/captcha",
                 "/test");

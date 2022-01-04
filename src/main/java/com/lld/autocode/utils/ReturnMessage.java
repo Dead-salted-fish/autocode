@@ -51,6 +51,7 @@ public class ReturnMessage implements Serializable {
     public  static  ReturnMessage ok(Object object){
         ReturnMessage returnMessage = new ReturnMessage();
         returnMessage.setCode("200");
+        returnMessage.setMessage("成功");
         returnMessage.setReturnData(object);
         return  returnMessage;
     }
@@ -58,13 +59,22 @@ public class ReturnMessage implements Serializable {
     public  static  ReturnMessage ok(){
         ReturnMessage returnMessage = new ReturnMessage();
         returnMessage.setCode("200");
+        returnMessage.setMessage("成功");
         return  returnMessage;
     }
 
     public  static  ReturnMessage error(Object object){
         ReturnMessage returnMessage = new ReturnMessage();
-        returnMessage.setCode("400");
+        returnMessage.setCode("440");
+        returnMessage.setMessage("失败");
         returnMessage.setReturnData(object);
+        return  returnMessage;
+    }
+
+    public  static  ReturnMessage error(String errStr){
+        ReturnMessage returnMessage = new ReturnMessage();
+        returnMessage.setCode("440");
+        returnMessage.setMessage(errStr);
         return  returnMessage;
     }
 }

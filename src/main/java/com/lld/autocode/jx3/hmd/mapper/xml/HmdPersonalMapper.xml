@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lld.autocode.jx3.hmd.mapper.HmdPersonalMapper">
+
+    <select id="getAllHmdPersonalWithPage" parameterType="string"
+            resultType="com.lld.autocode.jx3.hmd.entity.HmdPersonal">
+        select *
+        from jx3_hmd_personal
+        <where>
+
+            <if test="roleName != null">
+                and role_name like '%${roleName}%'
+            </if>
+
+            <if test="uid != null">
+                and role_type like '%${uid}%'
+            </if>
+
+        </where>
+        order by create_time desc
+
+    </select>
+
+    <select id="selectById" parameterType="long" resultType="com.lld.autocode.jx3.hmd.entity.HmdPersonal">
+        select *
+        from jx3_hmd_personal
+        where id = #{id}
+    </select>
+
+    <!--    <select id="getAllHmdPersonal" parameterType="string" resultType="com.lld.autocode.jx3.hmd.entity.HmdPersonal">-->
+    <!--        select *-->
+    <!--        from jx3_hmd_personal-->
+    <!--        <where>-->
+
+    <!--            <if test="roleName != null">-->
+    <!--                and role_name like '%${roleName}%'-->
+    <!--            </if>-->
+
+    <!--            <if test="uid != null">-->
+    <!--                and role_type like '%${uid}%'-->
+    <!--            </if>-->
+
+    <!--        </where>-->
+
+    <!--    </select>-->
+
+    <insert id="addHmdPersonal" parameterType="com.lld.autocode.jx3.hmd.entity.HmdPersonal">
+        INSERT INTO jx3_hmd_personal (id,
+                                      server_name,
+                                      role_name,
+                                      role_type,
+                                      uid,
+                                      reason,
+                                      evaluate,
+                                      remark,
+                                      version,
+                                      creator,
+                                      create_time,
+                                      update_by,
+                                      update_time)
+        VALUES (#{id}, #{serverName}, #{roleName}, #{roleType}, #{uid}, #{reason}, #{evaluate}, #{remark}, #{version},
+                #{creator}, #{createTime}, #{updateBy}, #{updateTime});
+
+    </insert>
+
+    <update id="updateById" parameterType="com.lld.autocode.jx3.hmd.entity.HmdPersonal">
+        update jx3_hmd_personal
+        set server_name = #{serverName},
+            role_name   = #{roleName},
+            role_type   = #{roleType},
+            uid         = #{uid},
+            reason      = #{reason},
+            evaluate    = #{evaluate},
+            remark      = #{remark},
+            version     = #{version},
+            update_by   = #{updateBy},
+            update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        delete
+        from jx3_hmd_personal
+        where id = #{id}
+    </delete>
+
+
+</mapper>

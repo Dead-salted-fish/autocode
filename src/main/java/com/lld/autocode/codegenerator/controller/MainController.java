@@ -48,7 +48,7 @@ public class MainController {
     public String test(HttpServletRequest req){
 
 //        System.out.println("enter");
-        return "testroute";
+        return "App";
     }
 
 

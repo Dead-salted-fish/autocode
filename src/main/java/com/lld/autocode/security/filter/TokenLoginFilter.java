@@ -4,6 +4,7 @@ package com.lld.autocode.security.filter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lld.autocode.security.entity.User;
+import com.lld.autocode.utils.BaseConstant;
 import com.lld.autocode.utils.JwtTokenUtil;
 import com.lld.autocode.utils.ResponseUtil;
 import com.lld.autocode.utils.ReturnMessage;
@@ -86,8 +87,10 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         }).collect(Collectors.toList()));
         map.put("loginName", user.getUsername());
 
-        redisTemplate.opsForValue().set(user.getId(), token, 60 * 30, TimeUnit.SECONDS);
-        redisTemplate.opsForValue().set(user.getUsername(), user, 60 * 30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(BaseConstant.REDIS_TOKEN_PREFIX +user.getId(), token, 60 * 30, TimeUnit.SECONDS);
+        //脱敏,意思一下
+        user.setPassword("******");
+        redisTemplate.opsForValue().set(BaseConstant.REDIS_USERENTITY_PREFIX+user.getId(), user, 60 * 30, TimeUnit.SECONDS);
         ResponseUtil.out(response, ReturnMessage.ok(map));
     }
 

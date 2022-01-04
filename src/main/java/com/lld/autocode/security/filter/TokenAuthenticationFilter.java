@@ -1,12 +1,19 @@
 package com.lld.autocode.security.filter;
 
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lld.autocode.security.entity.User;
+import com.lld.autocode.utils.BaseConstant;
 import com.lld.autocode.utils.JwtTokenUtil;
 import com.lld.autocode.utils.ResponseUtil;
 import com.lld.autocode.utils.ReturnMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -31,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
     private RedisTemplate redisTemplate;
 
+
     public TokenAuthenticationFilter(AuthenticationManager authManager, RedisTemplate redisTemplate) {
         super(authManager);
         this.redisTemplate = redisTemplate;
@@ -54,13 +62,11 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(request, response);
-        } else {
-            ResponseUtil.out(response, ReturnMessage.error("鉴权失败"));
         }
 
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
+    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) throws JsonProcessingException {
         // 获取Token字符串，token 置于 header 里
         String token = request.getHeader("token");
         if (!StringUtils.hasText(token)) {
@@ -68,25 +74,28 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         }
         if (token != null && !"".equals(token.trim())) {
             // 从Token中解密获取用户名
-            System.out.println(token);
+//            System.out.println(token);
             Long userId = JwtTokenUtil.getUserRoIdFromToken(token);
-            Long userRoIdFromToken = userId ==null?null:userId;
-            String tokenFromRedis = (String)redisTemplate.opsForValue().get(userRoIdFromToken);
+            String tokenFromRedis = (String)redisTemplate.opsForValue().get(BaseConstant.REDIS_TOKEN_PREFIX+userId);
             if(tokenFromRedis ==null){
                 throw new RuntimeException("token已过期");
             }else if(!tokenFromRedis.equals(token)){
                 throw new RuntimeException("无效token");
             }
+            Object obj = redisTemplate.opsForValue().get(BaseConstant.REDIS_USERENTITY_PREFIX + userId);
+            String userEntityStr = new ObjectMapper().writeValueAsString(obj);
 
-            String userName = JwtTokenUtil.getUserNameFromToken(token);
-            if (userName != null) {
-                //获取角色，系统暂无角色权鉴，此处暂时做空处理
-                Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                //authorities.add(new SimpleGrantedAuthority("admin"));
-                redisTemplate.expire(userRoIdFromToken,60*30,TimeUnit.SECONDS);
-                return new UsernamePasswordAuthenticationToken(userName, token, authorities);
+            User userEntity = new ObjectMapper().readValue(userEntityStr,User.class);
+
+            if (userEntity != null) {
+                //获取用户角色
+                Collection<? extends GrantedAuthority> authorities = userEntity.getAuthorities();
+                //重置redis 缓存时间
+                redisTemplate.expire(BaseConstant.REDIS_TOKEN_PREFIX+userId,60*30,TimeUnit.SECONDS);
+                redisTemplate.expire(BaseConstant.REDIS_USERENTITY_PREFIX+userId,60*30,TimeUnit.SECONDS);
+                return new UsernamePasswordAuthenticationToken(userEntity, token, authorities);
             }
-            return null;
+             throw new RuntimeException("token已过期");
         }
         throw new RuntimeException("token为空");
     }

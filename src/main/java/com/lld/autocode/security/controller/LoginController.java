@@ -35,6 +35,12 @@ public class LoginController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+
+    @GetMapping("/")
+    public String autocode2(){
+        return "App";
+    }
+
     @GetMapping("/login")
     public String autocode(){
         return "login/login";
@@ -60,7 +66,7 @@ public class LoginController {
         ImageIO.write(image,"jpg",os);
         String imgBase64 = Base64.getEncoder().encodeToString(os.toByteArray());
 
-        Long tinyid = TinyId.nextId("captcha");
+        Long tinyid = TinyId.nextId("experiment");
         redisTemplate.opsForValue().set("captcha"+tinyid.toString(),text,60*5, TimeUnit.SECONDS);
         return ReturnMessage.ok(new SysCaptcha(imgBase64,tinyid.toString()));
     }

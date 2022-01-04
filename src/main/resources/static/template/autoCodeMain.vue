@@ -57,7 +57,6 @@ module.exports = {
         {
           title: '表名',
           dataIndex: 'tableName',
-          key: 'age',
         },
         {
           title: 'Action',
@@ -114,7 +113,7 @@ module.exports = {
     },
 
     async getTableData(current, pageSize) {
-      let result = await httpGet('http://localhost:9090/getAllTableName', {
+      let result = await httpGet('/getAllTableName', {
         page: current,
         pageSize: pageSize,
         tableName: this.searchTableName
@@ -126,7 +125,7 @@ module.exports = {
         this.pagination.total = result.returnData.total
         this.pagination.current = result.returnData.current
       } else {
-        this.$message.error(result.returnData);
+        this.$message.error(result.message);
       }
 
     },

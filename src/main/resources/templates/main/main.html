@@ -17,7 +17,7 @@
     <script src="/js/vue-router.js"></script>
     <script src="/js/httpApi.js"></script>
 
-
+    <script src="/js/jx3/urlSetting.js"></script>
 
 </head>
 
@@ -28,17 +28,26 @@
             <div class="logo"></div>
             <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
                 <a-menu-item key="1">
-<!--                    <a-icon type="user"/>-->
+                    <!--                    <a-icon type="user"/>-->
                     <router-link to="/autoCode">autoCode</router-link>
                 </a-menu-item>
-                <a-menu-item key="2">
-<!--                    <a-icon type="video-camera"/>-->
-                    <router-link to="/bar">Go to Bar</router-link>
-                </a-menu-item>
-<!--                <a-menu-item key="3">-->
-<!--&lt;!&ndash;                    <a-icon type="upload"/>&ndash;&gt;-->
-<!--                    <router-link to="/gengrate">Go to gengrate</router-link>-->
-<!--                </a-menu-item>-->
+
+                <!--                <a-menu-item key="2">-->
+                <!--                    &lt;!&ndash;                    <a-icon type="video-camera"/>&ndash;&gt;-->
+                <!--                    <router-link to="/bar">剑网三</router-link>-->
+                <!--                </a-menu-item>-->
+                <a-sub-menu key="jx3">
+                    <span slot="title"><span>jx3</span></span>
+                    <a-sub-menu key="jx3_hmd">
+                    <span slot="title"><span>黑名单</span></span>
+                    <a-menu-item key="2">
+                        <router-link to="/jx3/hmdpersonal">个人黑名单</router-link>
+                    </a-menu-item>
+                    <a-menu-item key="3">
+                        <router-link to="/jx3/hmdteam">团队黑名单</router-link>
+                    </a-menu-item>
+                    </a-sub-menu>
+                </a-sub-menu>
             </a-menu>
         </a-layout-sider>
         <a-layout>
@@ -111,24 +120,32 @@
             },
             async getRoute() {
                 let result = await httpGet("/getRoute")
-                router.addRoute({path: '/autoCode',
+                router.addRoute({
+                    path: '/autoCode',
                     component: httpVueLoader('/template/autoCodeMain.vue'),
                 })
 
-                router.addRoute({path: '/',
-                    redirect:'/autoCode',
+                router.addRoute({
+                    path: '/',
+                    redirect: '/autoCode',
                 })
                 router.beforeEach((to, from, next) => {
-                    if (window.localStorage.getItem("token")){
+                    if (window.localStorage.getItem("token")) {
                         next()
-                    }
-                    else {
+                    } else {
                         this.$message.error('token过期');
-                        window.location.href='/login'
+                        window.location.href = '/login'
                     }
                 })
                 // // router.addRoute({path: '/foo', component: {template: '<div>foo</div>'}})
-                router.addRoute({path: '/bar', component: {template: '<div>bar</div>'}})
+                router.addRoute({
+                    path: '/jx3/hmdpersonal',
+                    component: httpVueLoader('/template/jx3/hmdPersonal.vue'),
+                })
+                router.addRoute({
+                    path: '/jx3/hmdteam',
+                    component: httpVueLoader('/template/jx3/hmdTeam.vue'),
+                })
                 console.log('result', result)
             }
         }

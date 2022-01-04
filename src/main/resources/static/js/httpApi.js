@@ -1,30 +1,48 @@
-async function  httpGet(url,parm){
+async function httpGet(url, _param) {
     let data = null;
     let token = window.localStorage.getItem("token")
+    let param = {}
 
-        await Vue.http.get(url, {
-            headers:{token:token},
-            params:parm
-        }).then((success) => {
-            console.log('success',success)
-            data = success.body
-        }, (error) => {
-            console.log('error',error);
+    if(_param){
+        Object.keys(_param).forEach(item=>{
+            if(_param[item]){
+                param[item] = _param[item]
+            }
         })
-        return data
+    }
+
+
+    await Vue.http.get(url, {
+        headers: {token: token},
+        params: param
+    }).then((success) => {
+        data = success.body
+    }, (error) => {
+        console.log('error', error);
+    })
+    return data
 }
 
-async function  httpPost(url,parm){
+async function httpPost(url, _param) {
     let data = null;
     let token = window.localStorage.getItem("token")
+    let param = {}
 
-        await Vue.http.post(url,parm,{
-            headers:{token:token},
-        }).then((success) => {
-            console.log('success',success)
-            data = success.body
-        }, (error) => {
-            console.log('error',error);
+    if(_param){
+        Object.keys(_param).forEach(item=>{
+            if(_param[item]){
+                param[item] = _param[item]
+            }
         })
-        return data
+    }
+
+    await Vue.http.post(url, param, {
+        headers: {token: token},
+    }).then((success) => {
+        console.log('success', success)
+        data = success.body
+    }, (error) => {
+        console.log('error', error);
+    })
+    return data
 }

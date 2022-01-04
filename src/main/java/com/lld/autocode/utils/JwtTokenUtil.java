@@ -10,7 +10,7 @@ import java.util.Base64;
 import java.util.Date;
 @Component
 public class JwtTokenUtil {
-    private static long tokenExpiration = 24 * 60 * 60 * 1000;
+    private static long tokenExpiration = 60*60*24*365;
     private static String tokenSignKey = Base64.getEncoder().encodeToString("wzl".getBytes());
     private static String userRoleKey = "userRole";
 
@@ -48,6 +48,7 @@ public class JwtTokenUtil {
     }
 
     public static Long getUserRoIdFromToken(String token) {
+
         Claims claims = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token).getBody();
         return claims.get("userId")!=null? Long.valueOf(claims.get("userId").toString()):null;
     }

@@ -254,7 +254,7 @@ module.exports = {
         success = true
         this.$message.success('成功');
       } else {
-        this.$message.error(result.returnData);
+        this.$message.error(result.message);
       }
        return success;
     },
@@ -299,7 +299,7 @@ module.exports = {
           }
         })
       } else {
-        this.$message.error(result.returnData);
+        this.$message.error(result.message);
       }
     },
 
@@ -308,7 +308,7 @@ module.exports = {
       if (result && result.code === "200") {
         this.javaType = result.returnData
       } else {
-        this.$message.error(result.returnData);
+        this.$message.error(result.message);
       }
 
     },

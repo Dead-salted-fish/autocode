@@ -78,7 +78,7 @@
                     window.location.href = '/main'
                 } else {
                     console.log(result)
-                    this.$message.error(result.returnData);
+                    this.$message.error(result.message);
                 }
 
             },
@@ -95,7 +95,7 @@
                    this.captcha  = 'data:image/jpg;base64,' + result.returnData.imgBase64;
                     this.captchaIdentification=result.returnData.captchaIdentification;
                 } else {
-                    this.$message.error(result.returnData);
+                    this.$message.error(result.message);
                 }
             },
             reloadCaptcha() {
