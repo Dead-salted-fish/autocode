@@ -56,7 +56,7 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
                 chain.doFilter(request, response);
             }else {
                 e.printStackTrace();
-                ResponseUtil.out(response, ReturnMessage.error(e.getMessage()));
+                ResponseUtil.out(response, ReturnMessage.error("800",e.getMessage()));
             }
         }
         if (authentication != null) {

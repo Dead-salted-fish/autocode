@@ -1,3 +1,5 @@
+let routeCopy = null
+
 async function httpGet(url, _param) {
     let data = null;
     let token = window.localStorage.getItem("token")
@@ -11,7 +13,6 @@ async function httpGet(url, _param) {
         })
     }
 
-
     await Vue.http.get(url, {
         headers: {token: token},
         params: param
@@ -20,7 +21,13 @@ async function httpGet(url, _param) {
     }, (error) => {
         console.log('error', error);
     })
-    return data
+    if(data && data.code === '800'){
+        if(routeCopy){
+            localStorage.clear()
+            routeCopy.push({path:'/login'})
+        }
+    }
+        return data
 }
 
 async function httpPost(url, _param) {
@@ -39,10 +46,16 @@ async function httpPost(url, _param) {
     await Vue.http.post(url, param, {
         headers: {token: token},
     }).then((success) => {
-        console.log('success', success)
         data = success.body
     }, (error) => {
         console.log('error', error);
     })
-    return data
+
+    if(data && data.code === '800'){
+        if(routeCopy){
+            localStorage.clear()
+            routeCopy.push({path:'/login'})
+        }
+    }
+        return data
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lld.autocode.system.mapper.SystemMapper">
+
+    <select id="getBaseMenu" resultType="com.lld.autocode.system.entity.MenuInfo">
+        select *
+        from menu_info
+        where parent_menu_id = 0
+          and ban != '1'
+        ORDER BY sort ASC
+    </select>
+
+    <select id="getMenuChildren" parameterType="long" resultType="com.lld.autocode.system.entity.MenuInfo">
+        select *
+        from menu_info
+        where parent_menu_id = #{parentId}
+          and ban != '1'
+        ORDER BY sort ASC
+    </select>
+
+</mapper>

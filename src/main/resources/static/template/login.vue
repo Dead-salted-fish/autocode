@@ -1,14 +1,16 @@
 <template>
-  <div class="content">
+  <div class="content_login">
     <div class="content_input">
       <div class="title">
         <p>登录</p>
-      </div>
+      </div >
+      <div class="login_input">
       <a-input v-model="username" placeholder="用户名"></a-input>
       <a-input-password v-model="password" placeholder="密码"></a-input-password>
       <a-input v-model="captchaInput" placeholder="验证码" style="width: 180px"></a-input>
       <span style="margin-left: 16px" title="点击图片，换一张"><img :src="captcha" @click="reloadCaptcha"/></span>
-      <div class="content_button">
+      </div>
+        <div class="content_button login_button">
         <a-button type="primary" @click="login">登录</a-button>
       </div>
     </div>
@@ -39,7 +41,7 @@ module.exports = {
         captcha: this.captchaInput === null || this.captchaInput === '' ? null : this.captchaInput,
         captchaIdentification: this.captchaIdentification
       }
-      let result = await httpPost('/userlogin', user)
+      let result = await httpPost(loginUrlSetting['userlogin'], user)
       if (result && result.code === "200") {
         for (const key in result.returnData) {
           localStorage.setItem(key, result.returnData[key])
@@ -59,7 +61,7 @@ module.exports = {
       //     }, (error) => {
       //         console.log(error);
       //     })
-      let result = await httpGet("/captcha")
+      let result = await httpGet(loginUrlSetting['captcha'],null, this.$router)
       if (result && result.code === "200") {
         console.log('result', result)
         this.captcha = 'data:image/jpg;base64,' + result.returnData.imgBase64;

@@ -4,7 +4,7 @@
 	margin: 0;
 }
 
-.content {
+.content_login {
 	width: 500px;
 	height: 300px;
 	box-sizing: border-box;
@@ -122,7 +122,7 @@
 
 }
 
-.anticon{
+.content_login .anticon{
 	margin-bottom: 19px;
 }
 
@@ -132,12 +132,9 @@
 
 
 
-.ant-input {
+.login_input .ant-input{
 	margin-bottom: 25px;
 }
-
-
-
 
 
 .title {
@@ -148,6 +145,6 @@
 	color: #606266;
 }
 
-.ant-btn{
+.login_button .ant-btn{
 	width: 100%;
 }

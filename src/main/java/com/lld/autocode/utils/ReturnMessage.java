@@ -77,4 +77,11 @@ public class ReturnMessage implements Serializable {
         returnMessage.setMessage(errStr);
         return  returnMessage;
     }
+
+    public  static  ReturnMessage error(String errcode,String errStr){
+        ReturnMessage returnMessage = new ReturnMessage();
+        returnMessage.setCode(errcode);
+        returnMessage.setMessage(errStr);
+        return  returnMessage;
+    }
 }

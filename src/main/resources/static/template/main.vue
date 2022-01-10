@@ -4,26 +4,36 @@
       <a-layout-sider v-model="collapsed" :trigger="null" collapsible width="240">
         <div class="logo"></div>
         <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
-          <a-menu-item key="1">
-            <router-link to="/main/autoCode">autoCode</router-link>
-          </a-menu-item>
+          <!--          <a-menu-item key="1">-->
+          <!--            <router-link to="/main/autoCode">autoCode</router-link>-->
+          <!--          </a-menu-item>-->
 
-          <a-sub-menu key="jx3">
-            <span slot="title"><span>jx3</span></span>
-            <a-sub-menu key="jx3_hmd">
-              <span slot="title"><span>黑名单</span></span>
-              <a-menu-item key="2">
-                <router-link to="/main/jx3/hmdPersonal">个人黑名单</router-link>
-              </a-menu-item>
-              <a-menu-item key="3">
-                <router-link to="/main/jx3/hmdTeam">团队黑名单</router-link>
-              </a-menu-item>
-            </a-sub-menu>
-          </a-sub-menu>
+          <!--          <a-sub-menu key="jx3">-->
+          <!--            <span slot="title"><span>jx3</span></span>-->
+          <!--            <a-sub-menu key="jx3_hmd">-->
+          <!--              <span slot="title"><span>黑名单</span></span>-->
+          <!--              <a-menu-item key="2">-->
+          <!--                <router-link to="/main/jx3/hmdPersonal">个人黑名单</router-link>-->
+          <!--              </a-menu-item>-->
+          <!--              <a-menu-item key="3">-->
+          <!--                <router-link to="/main/jx3/hmdTeam">团队黑名单</router-link>-->
+          <!--              </a-menu-item>-->
+          <!--            </a-sub-menu>-->
+          <!--          </a-sub-menu>-->
+          <template v-for="menu in menus">
+            <a-menu-item v-if="!menu.children" :key="menu.menuName">
+              <router-link :to="menu.routerPath">{{ menu.title }}</router-link>-->
+            </a-menu-item>
+
+
+            <sub-menu v-else :menu-info="menu"></sub-menu>
+          </template>
+
+
         </a-menu>
       </a-layout-sider>
-      <a-layout>
 
+      <a-layout>
         <a-layout-header style="background: #fff; padding: 0">
           <a-icon
               class="trigger"
@@ -37,7 +47,6 @@
         >
           <router-view></router-view>
         </a-layout-content>
-
       </a-layout>
 
     </a-layout>
@@ -45,53 +54,82 @@
 </template>
 
 <script>
+const SubMenu = {
+  template: `
+    <a-sub-menu key="1" v-bind="$props" v-on="$listeners">
+        <span slot="title">
+          <span>{{ menuInfo.title }}</span>
+        </span>
+        <template v-for="menu in menuInfo.children">
+          <a-menu-item v-if="!menu.children" :key="menu.menuName">
+            <router-link :to="menu.routerPath">{{ menu.title }}</router-link>-->
+          </a-menu-item>
+          <sub-menu v-else :menu-info="menu"></sub-menu>
+        </template>
+    </a-sub-menu>
+  `,
+  isSubMenu: true,
+  props: {
+    ...Menu.SubMenu.props,
+    // Cannot overlap with properties within Menu.SubMenu.props
+    menuInfo: {
+      type: Object,
+      default: () => ({}),
+    },
+  }
+};
+
+Vue.component('sub-menu', {
+  functional: true,
+  props: {
+    menuInfo: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  isSubMenu: true,
+  render: function (createElement, context) {
+    console.log('this.menuInfo',this.menuInfo)
+    console.log('context',context)
+    function appropriateListComponent() {
+      return SubMenu
+    }
+
+    return createElement(
+        appropriateListComponent()
+        , {
+          props: context.props
+        },
+    )
+  }
+})
+
 
 module.exports = {
-  components: {
-  },
+  components: {},
   data() {
     return {
       collapsed: false,
+      menus: [],
     }
   },
   created: function () {
-    // this.getRoute()
+    this.getRoute()
   },
   methods: {
     username() {
-      // We will see what `params` is shortly
+
       console.log(this.$route.params)
 
     },
-    // async getRoute() {
-    //   // let result = await httpGet("/getRoute")
-    //   // router.addRoute({
-    //   //   path: '/autoCode',
-    //   //   component: httpVueLoader('/template/autoCodeMain.vue'),
-    //   // })
-    //   //
-    //   // router.addRoute({
-    //   //   path: '/',
-    //   //   redirect: '/autoCode',
-    //   // })
-    //   // router.beforeEach((to, from, next) => {
-    //   //   if (window.localStorage.getItem("token")) {
-    //   //     next()
-    //   //   } else {
-    //   //     this.$message.error('token过期');
-    //   //     window.location.href = '/login'
-    //   //   }
-    //   // })
-    //   router.addRoute({
-    //     path: '/jx3/hmdpersonal',
-    //     component: httpVueLoader('/template/jx3/hmdPersonal.vue'),
-    //   })
-    //   router.addRoute({
-    //     path: '/jx3/hmdteam',
-    //     component: httpVueLoader('/template/jx3/hmdTeam.vue'),
-    //   })
-    //   console.log('result', result)
-    // }
+    async getRoute() {
+      let result = await httpGet(appUrlSetting['getRoute'])
+      if (result && result.code === '200') {
+        this.menus = result.returnData
+      } else {
+        this.$message.error(result.message);
+      }
+    }
   }
 }
 </script>

@@ -3,49 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>登录</title>
-
     <script src="/js/vue-resource.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <!--antd组件-->
     <script src="/js/moment.js"></script>
     <script src="/js/antd.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/antd.css"/>
-
     <!--   解析模板-->
     <script src="/js/httpVueLoader.js"></script>
     <!--    vue路由-->
     <script src="/js/vue-router.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <!--api-->
     <script src="/js/httpApi.js"></script>
-
-    <script src="/js/jx3/urlSetting.js"></script>
+    <!-- url-->
+    <script src="/js/urlSetting.js"></script>
 
 </head>
 
 <body>
-<div id="app" style="height: 100%">
+<div style="height: 100%">
     <a-layout id="components-layout-demo-custom-trigger" style="height: 100%">
         <a-layout-sider v-model="collapsed" :trigger="null" collapsible width="240">
             <div class="logo"></div>
             <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
-                <a-menu-item key="1">
-                    <!--                    <a-icon type="user"/>-->
-                    <router-link to="/autoCode">autoCode</router-link>
-                </a-menu-item>
+                <!--          <a-menu-item key="1">-->
+                <!--            <router-link to="/main/autoCode">autoCode</router-link>-->
+                <!--          </a-menu-item>-->
 
-                <!--                <a-menu-item key="2">-->
-                <!--                    &lt;!&ndash;                    <a-icon type="video-camera"/>&ndash;&gt;-->
-                <!--                    <router-link to="/bar">剑网三</router-link>-->
-                <!--                </a-menu-item>-->
                 <a-sub-menu key="jx3">
                     <span slot="title"><span>jx3</span></span>
                     <a-sub-menu key="jx3_hmd">
-                    <span slot="title"><span>黑名单</span></span>
-                    <a-menu-item key="2">
-                        <router-link to="/jx3/hmdpersonal">个人黑名单</router-link>
-                    </a-menu-item>
-                    <a-menu-item key="3">
-                        <router-link to="/jx3/hmdteam">团队黑名单</router-link>
-                    </a-menu-item>
+                        <span slot="title"><span>黑名单</span></span>
+                        <a-menu-item key="2">
+                            <router-link to="/main/jx3/hmdPersonal">个人黑名单</router-link>
+                        </a-menu-item>
+                        <a-menu-item key="3">
+                            <router-link to="/main/jx3/hmdTeam">团队黑名单</router-link>
+                        </a-menu-item>
                     </a-sub-menu>
                 </a-sub-menu>
             </a-menu>

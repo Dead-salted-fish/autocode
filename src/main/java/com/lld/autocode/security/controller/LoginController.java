@@ -43,16 +43,10 @@ public class LoginController {
 
     @GetMapping("/login")
     public String autocode(){
-        return "login/login";
+        //return "login/login";
+        return "redirect:/";
     }
 
-    @GetMapping("/getRoute")
-    @ResponseBody
-    public String getRoute(HttpServletRequest req){
-
-//        System.out.println("enter");
-        return "route";
-    }
 
     @GetMapping("/captcha")
     @ResponseBody
