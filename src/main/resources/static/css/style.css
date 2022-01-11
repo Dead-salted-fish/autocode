@@ -122,25 +122,25 @@
 
 }
 
-.content_login .anticon{
-	margin-bottom: 19px;
-}
+/*.content_login .anticon{*/
+/*	margin-bottom: 19px;*/
+/*}*/
 
-.content_button {
-	margin-top: 10px;
-}
+/*.content_button {*/
+/*	margin-top: 10px;*/
+/*}*/
 
 
 
-.login_input .ant-input{
-	margin-bottom: 25px;
-}
+/*.login_input .ant-input{*/
+/*	margin-bottom: 25px;*/
+/*}*/
 
 
 .title {
 	text-align: center;
 	font-size: 24px;
-	margin-bottom: 30px;
+
 	font-weight: bold;
 	color: #606266;
 }

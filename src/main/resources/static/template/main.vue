@@ -4,32 +4,12 @@
       <a-layout-sider v-model="collapsed" :trigger="null" collapsible width="240">
         <div class="logo"></div>
         <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
-          <!--          <a-menu-item key="1">-->
-          <!--            <router-link to="/main/autoCode">autoCode</router-link>-->
-          <!--          </a-menu-item>-->
-
-          <!--          <a-sub-menu key="jx3">-->
-          <!--            <span slot="title"><span>jx3</span></span>-->
-          <!--            <a-sub-menu key="jx3_hmd">-->
-          <!--              <span slot="title"><span>黑名单</span></span>-->
-          <!--              <a-menu-item key="2">-->
-          <!--                <router-link to="/main/jx3/hmdPersonal">个人黑名单</router-link>-->
-          <!--              </a-menu-item>-->
-          <!--              <a-menu-item key="3">-->
-          <!--                <router-link to="/main/jx3/hmdTeam">团队黑名单</router-link>-->
-          <!--              </a-menu-item>-->
-          <!--            </a-sub-menu>-->
-          <!--          </a-sub-menu>-->
           <template v-for="menu in menus">
             <a-menu-item v-if="!menu.children" :key="menu.menuName">
-              <router-link :to="menu.routerPath">{{ menu.title }}</router-link>-->
+              <router-link :to="menu.routerPath">{{ menu.title }}</router-link>
             </a-menu-item>
-
-
             <sub-menu v-else :menu-info="menu"></sub-menu>
           </template>
-
-
         </a-menu>
       </a-layout-sider>
 
@@ -57,15 +37,16 @@
 const SubMenu = {
   template: `
     <a-sub-menu key="1" v-bind="$props" v-on="$listeners">
-        <span slot="title">
+    <span slot="title">
           <span>{{ menuInfo.title }}</span>
         </span>
-        <template v-for="menu in menuInfo.children">
-          <a-menu-item v-if="!menu.children" :key="menu.menuName">
-            <router-link :to="menu.routerPath">{{ menu.title }}</router-link>-->
-          </a-menu-item>
-          <sub-menu v-else :menu-info="menu"></sub-menu>
-        </template>
+    <template v-for="menu in menuInfo.children">
+      <a-menu-item v-if="!menu.children" :key="menu.menuName">
+        <router-link :to="menu.routerPath">{{ menu.title }}</router-link>
+        -->
+      </a-menu-item>
+      <sub-menu v-else :menu-info="menu"></sub-menu>
+    </template>
     </a-sub-menu>
   `,
   isSubMenu: true,
@@ -89,8 +70,9 @@ Vue.component('sub-menu', {
   },
   isSubMenu: true,
   render: function (createElement, context) {
-    console.log('this.menuInfo',this.menuInfo)
-    console.log('context',context)
+    console.log('this.menuInfo', this.menuInfo)
+    console.log('context', context)
+
     function appropriateListComponent() {
       return SubMenu
     }

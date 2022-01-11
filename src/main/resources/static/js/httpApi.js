@@ -7,7 +7,7 @@ async function httpGet(url, _param) {
 
     if(_param){
         Object.keys(_param).forEach(item=>{
-            if(_param[item]){
+            if(_param[item]&&_param[item]!== ''){
                 param[item] = _param[item]
             }
         })
@@ -37,7 +37,7 @@ async function httpPost(url, _param) {
 
     if(_param){
         Object.keys(_param).forEach(item=>{
-            if(_param[item]){
+            if(_param[item]&&_param[item]!== ''){
                 param[item] = _param[item]
             }
         })

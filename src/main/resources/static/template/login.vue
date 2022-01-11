@@ -3,16 +3,58 @@
     <div class="content_input">
       <div class="title">
         <p>登录</p>
-      </div >
+      </div>
       <div class="login_input">
-      <a-input v-model="username" placeholder="用户名"></a-input>
-      <a-input-password v-model="password" placeholder="密码"></a-input-password>
-      <a-input v-model="captchaInput" placeholder="验证码" style="width: 180px"></a-input>
-      <span style="margin-left: 16px" title="点击图片，换一张"><img :src="captcha" @click="reloadCaptcha"/></span>
+        <a-form-model ref="loginForm" v-bind="layout" :model="formValue">
+          <a-row :gutter="24" type="flex" justify="center">
+
+            <a-col :span="24">
+              <a-form-model-item
+                  prop="username"
+                  :rules="{ required:true,message:'请输入用户名'}"
+              >
+                <a-input v-model="formValue.username" placeholder="用户名"></a-input>
+              </a-form-model-item>
+            </a-col>
+
+            <a-col :span="24">
+              <a-form-model-item
+                  prop="password"
+                  :rules="{ required:true,message:'请输入密码'}"
+              >
+                <a-input-password v-model="formValue.password" placeholder="密码"></a-input-password>
+              </a-form-model-item>
+            </a-col>
+
+            <a-col :span="15">
+              <a-form-model-item
+                  prop="password"
+                  :rules="{ required:true,message:'请输入验证码'}"
+              >
+                <a-input v-model="formValue.captchaInput" placeholder="验证码"></a-input>
+
+              </a-form-model-item>
+            </a-col>
+
+            <a-col :span="9" style="padding-left: 10px">
+              <a-form-model-item
+                  prop="password"
+              >
+                <span  title="点击图片，换一张"><img :src="captcha" @click="reloadCaptcha"/></span>
+              </a-form-model-item>
+            </a-col>
+
+            <a-col :span="24">
+              <div class="content_button login_button">
+                <a-button type="primary" @click="login">登录</a-button>
+              </div>
+            </a-col>
+
+          </a-row>
+        </a-form-model>
       </div>
-        <div class="content_button login_button">
-        <a-button type="primary" @click="login">登录</a-button>
-      </div>
+
+
     </div>
   </div>
 </template>
@@ -22,11 +64,16 @@
 module.exports = {
   data() {
     return {
-      username: null,
-      password: null,
+      formValue:{
+        username: null,
+        password: null,
+        captchaInput: null,
+      },
       captcha: null,
-      captchaInput: null,
       captchaIdentification: null,
+      layout: {
+        wrapperCol: {span: 24},
+      },
     }
   },
   created: function () {
@@ -35,23 +82,27 @@ module.exports = {
   },
   methods: {
     async login() {
-      let user = {
-        username: this.username === null || this.username === '' ? null : this.username,
-        password: this.password === null || this.password === '' ? null : this.password,
-        captcha: this.captchaInput === null || this.captchaInput === '' ? null : this.captchaInput,
-        captchaIdentification: this.captchaIdentification
-      }
-      let result = await httpPost(loginUrlSetting['userlogin'], user)
-      if (result && result.code === "200") {
-        for (const key in result.returnData) {
-          localStorage.setItem(key, result.returnData[key])
+      this.$refs['loginForm'].validate(async(valid) => {
+        if (valid) {
+          this.formValue.captchaIdentification= this.captchaIdentification
+          let result = await httpPost(loginUrlSetting['userlogin'], this.formValue)
+          if (result && result.code === "200") {
+            for (const key in result.returnData) {
+              localStorage.setItem(key, result.returnData[key])
+            }
+            this.$message.success('成功');
+            this.$router.push({path: 'main'});
+          } else {
+            console.log(result)
+            this.$message.error(result.message);
+          }
+        } else {
+          console.log('error submit!!');
+          return false;
         }
-        this.$message.success('成功');
-        this.$router.push({path:'main'});
-      } else {
-        console.log(result)
-        this.$message.error(result.message);
-      }
+      });
+
+
 
     },
     async getCaptcha() {
@@ -61,7 +112,7 @@ module.exports = {
       //     }, (error) => {
       //         console.log(error);
       //     })
-      let result = await httpGet(loginUrlSetting['captcha'],null, this.$router)
+      let result = await httpGet(loginUrlSetting['captcha'], null, this.$router)
       if (result && result.code === "200") {
         console.log('result', result)
         this.captcha = 'data:image/jpg;base64,' + result.returnData.imgBase64;
