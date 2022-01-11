@@ -31,4 +31,6 @@ public interface HmdPersonalMapper extends BaseMapper<HmdPersonal> {
     int updateById(HmdPersonal hmdPersonal);
 
     int deleteById(Long id);
+
+
 }

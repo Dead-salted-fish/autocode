@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      :title="role&&role.roleName?role.roleName:'新增'"
+      :title="rowId?formValue.roleName:'新增'"
       :visible="visible"
       cancel-text="取消"
       ok-text="确认"
@@ -101,8 +101,9 @@ module.exports = {
     close: {
       type: Function,
     },
-    role: {
-      type: Object,
+    rowId: {
+      type: Number,
+      default: null
     }
   },
   data: function () {
@@ -126,9 +127,14 @@ module.exports = {
     this.initForm()
   },
   methods: {
-    initForm(){
-      if(this.role){
-        Object.assign(this.formValue,this.role);
+    async initForm(){
+      if(this.rowId){
+      let result = await httpGet(jx3UrlSetting['getHmdPersonalById'],{id:this.rowId})
+        if (result && result.code === "200") {
+          this.formValue= result.returnData
+        } else {
+          this.$message.error(result.message);
+        }
       }
     },
      handleOk(e) {
@@ -136,7 +142,7 @@ module.exports = {
       this.$refs['hmdPersonalForm'].validate(async(valid) => {
         if (valid) {
           let result
-          if(!this.role){
+          if(!this.rowId){
             result  = await httpPost(jx3UrlSetting['hmdPersonalAdd'], this.formValue)
           }else {
             result  = await httpPost(jx3UrlSetting['hmdPersonalUpdate'], this.formValue)

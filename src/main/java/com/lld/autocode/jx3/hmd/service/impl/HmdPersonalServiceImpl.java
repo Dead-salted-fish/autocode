@@ -57,5 +57,10 @@ public class HmdPersonalServiceImpl extends ServiceImpl<HmdPersonalMapper, HmdPe
         return ReturnMessage.ok();
     }
 
+    @Override
+    public ReturnMessage getById(HmdPersonal personal) {
+        HmdPersonal hmdPersonal = this.baseMapper.selectById(personal.getId());
+        return ReturnMessage.ok(hmdPersonal);
+    }
 
 }

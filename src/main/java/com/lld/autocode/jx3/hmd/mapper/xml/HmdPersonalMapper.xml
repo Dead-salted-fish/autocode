@@ -6,7 +6,7 @@
 
     <select id="getAllHmdPersonalWithPage" parameterType="string"
             resultType="com.lld.autocode.jx3.hmd.entity.HmdPersonal">
-        select *
+        select id,server_name,role_name,role_type,uid
         from jx3_hmd_personal
         <where>
 

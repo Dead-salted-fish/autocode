@@ -59,4 +59,10 @@ public class HmdTeamServiceImpl extends ServiceImpl<HmdTeamMapper, HmdTeam> impl
         this.baseMapper.deleteById(hmdTeam.getId());
         return ReturnMessage.ok();
     }
+
+    @Override
+    public ReturnMessage getById(HmdTeam team) {
+        HmdTeam hmdTeam = this.baseMapper.selectById(team.getId());
+        return ReturnMessage.ok(hmdTeam);
+    }
 }

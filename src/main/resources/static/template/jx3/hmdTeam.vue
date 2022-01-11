@@ -1,29 +1,30 @@
 <template>
   <div id="app1">
-      <a-row :gutter="24">
+    <!--    搜索区-->
+    <a-row :gutter="24">
+      <a-col :md="6" :sm="12">
+        <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" label="团名">
+          <a-input v-model="teamName" placeholder="请输入团名"></a-input>
+        </a-form-item>
+      </a-col>
+
+      <a-col :md="6" :sm="12">
+        <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="yy频道">
+          <a-input v-model="yyChannel" placeholder="请输入yy频道"></a-input>
+        </a-form-item>
+      </a-col>
+
+
+      <template v-if="toggleSearchStatus">
         <a-col :md="6" :sm="12">
-          <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" label="团名">
-            <a-input v-model="teamName" placeholder="请输入团名"></a-input>
+          <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" label="qq群">
+            <a-input v-model="qqGroup" placeholder="请输入qq群"></a-input>
           </a-form-item>
         </a-col>
+      </template>
 
-        <a-col :md="6" :sm="12">
-          <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="yy频道">
-            <a-input v-model="yyChannel" placeholder="请输入yy频道"></a-input>
-          </a-form-item>
-        </a-col>
-
-
-        <template v-if="toggleSearchStatus">
-          <a-col :md="6" :sm="12">
-            <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" label="qq群">
-              <a-input v-model="qqGroup" placeholder="请输入qq群"></a-input>
-            </a-form-item>
-          </a-col>
-        </template>
-
-        <a-col :md="6" :sm="8">
-          <a-form-item>
+      <a-col :md="6" :sm="8">
+        <a-form-item>
             <span style="float: left;overflow: hidden;">
               <a-button type="primary" @click="search" icon="search">查询</a-button>
               <a-button type="primary" @click="reset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -32,9 +33,9 @@
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
               </a>
             </span>
-          </a-form-item>
-        </a-col>
-      </a-row>
+        </a-form-item>
+      </a-col>
+    </a-row>
 
     <a-row :gutter="24" type="flex">
       <a-col :span="8">
@@ -46,21 +47,44 @@
       </a-col>
     </a-row>
 
+    <!--    表格-->
     <a-row style="margin-top: 10px">
       <a-table :columns="columns" :data-source="data" :pagination="pagination" :bordered="true">
+        <template slot="teamName" slot-scope="text, record">
+          <a @click="showDetail(record)">{{ text }}</a>
+        </template>
+
         <template slot="action" slot-scope="text, record">
           <a-space>
             <a @click="showHmdModal(record)">修改</a>
-            <a @click="deleteHmdTeam(record)">删除</a>
+            <a-popconfirm placement="topLeft"
+                          title="真的要删除吗"
+                          ok-text="确定"
+                          cancel-text="取消"
+                          @confirm="deleteHmdTeam(record)">
+              <a href="#">删除</a>
+            </a-popconfirm>
           </a-space>
         </template>
       </a-table>
     </a-row>
 
+    <!--    增加修改弹框-->
     <hmd-personal-modal v-if="visible===true" :visible="visible" :close="close"
-                        :role="hmdModelParam"></hmd-personal-modal>
-  </div>
+                        :row-id="selectRowId"></hmd-personal-modal>
 
+    <!--    抽屉-->
+    <a-drawer
+        title="详情"
+        :width="720"
+        :visible="drawerVisible"
+        :body-style="{ paddingBottom: '80px' }"
+        @close="drawerClose"
+    >
+      <hmd-team-drawer-content v-if="drawerVisible" :row-id="selectRowId"></hmd-team-drawer-content>
+    </a-drawer>
+
+  </div>
 </template>
 
 <script type="module">
@@ -70,6 +94,7 @@ const columns = [
   {
     title: '序号',
     dataIndex: 'colIndex',
+    width: 65,
     customRender: (text, record, index) => `${index + 1}`,
   },
   {
@@ -79,6 +104,7 @@ const columns = [
   {
     title: '团名',
     dataIndex: 'teamName',
+    scopedSlots: {customRender: 'teamName'},
   },
   {
     title: 'yy频道',
@@ -112,17 +138,19 @@ const columns = [
 module.exports = {
   props: {},
   components: {
-    'hmdPersonalModal': httpVueLoader('/template/jx3/hmdTeamModal.vue')
+    'hmdPersonalModal': httpVueLoader(urlPrefix + '/template/jx3/hmdTeamModal.vue'),
+    'hmdTeamDrawerContent': httpVueLoader(urlPrefix + '/template/jx3/hmdTeamDrawerContent.vue')
   },
   data() {
     return {
       toggleSearchStatus: false,
+      drawerVisible: false,
       teamName: null,
       yyChannel: null,
       qqGroup: null,
       columns: columns,
       visible: false,
-      hmdModelParam: null,
+      selectRowId: null,
       data: [],
       pagination: {
         pageNo: 1,
@@ -148,6 +176,14 @@ module.exports = {
 
   },
   methods: {
+    drawerClose() {
+      this.drawerVisible = false
+      this.selectRowId = null
+    },
+    showDetail(record) {
+      this.selectRowId = record.id
+      this.drawerVisible = true
+    },
     handleToggleSearch() {
       this.toggleSearchStatus = !this.toggleSearchStatus
     },
@@ -162,6 +198,7 @@ module.exports = {
     },
     close(refreshtable) {
       this.visible = false
+      this.selectRowId = null
       if (refreshtable) {
         this.getTableData(this.pagination.pageNo, this.pagination.pageSize)
       }
@@ -176,7 +213,9 @@ module.exports = {
       }
     },
     showHmdModal(record) {
-      this.hmdModelParam = record
+      if (record) {
+        this.selectRowId = record.id
+      }
       this.visible = true;
     },
     initTable() {

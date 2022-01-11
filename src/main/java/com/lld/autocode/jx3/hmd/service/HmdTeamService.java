@@ -21,4 +21,7 @@ public interface HmdTeamService extends IService<HmdTeam> {
     ReturnMessage updateHmdTeam(HmdTeam hmdTeam);
 
     ReturnMessage deleteHmdTeam(HmdTeam hmdTeam);
+
+    ReturnMessage getById(HmdTeam hmdTeam);
+
 }

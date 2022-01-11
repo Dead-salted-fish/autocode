@@ -19,4 +19,6 @@ public interface HmdPersonalService extends IService<HmdPersonal> {
     ReturnMessage updateHmdPersonal(HmdPersonal personal);
 
     ReturnMessage deleteHmdPersonal(HmdPersonal personal);
+
+    ReturnMessage getById(HmdPersonal personal);
 }

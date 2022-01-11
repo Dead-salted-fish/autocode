@@ -46,4 +46,9 @@ public class HmdTeamController {
         return hmdTeamService.deleteHmdTeam(hmdTeam);
     }
 
+    @GetMapping("/jx3/hmdTeam/getById")
+    public ReturnMessage getById(HmdTeam hmdTeam){
+        return hmdTeamService.getById(hmdTeam);
+    }
+
 }

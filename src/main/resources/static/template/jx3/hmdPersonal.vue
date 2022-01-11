@@ -1,5 +1,6 @@
 <template>
   <div id="app1">
+<!--    搜索区-->
     <a-row :gutter="24">
       <a-col :md="6" :sm="12">
         <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" label="角色名">
@@ -33,26 +34,50 @@
           <a-button type="primary" @click="showHmdModal()">
             新增
           </a-button>
-          <a-button type="primary" @click="test()">
-            test route
-          </a-button>
+<!--          <a-button type="primary" @click="test()">-->
+<!--            test route-->
+<!--          </a-button>-->
         </a-space>
       </a-col>
     </a-row>
 
+<!--    表格-->
     <a-row style="margin-top: 10px">
       <a-table :columns="columns" :data-source="data" :pagination="pagination" :bordered="true">
+        <template slot="roleName" slot-scope="text, record">
+           <a @click="showDetail(record)">{{ text }}</a>
+        </template>
+
         <template slot="action" slot-scope="text, record">
           <a-space>
             <a @click="showHmdModal(record)">修改</a>
-            <a @click="deleteHmdRole(record)">删除</a>
+            <a-popconfirm placement="topLeft"
+                          title="真的要删除吗"
+                          ok-text="确定"
+                          cancel-text="取消"
+                          @confirm="deleteHmdRole(record)">
+              <a href="#">删除</a>
+            </a-popconfirm>
           </a-space>
         </template>
       </a-table>
     </a-row>
 
-    <hmd-personal-modal v-if="visible===true" :visible="visible" :close="close"
-                        :role="hmdModelParam"></hmd-personal-modal>
+<!--    增加修改弹框-->
+    <hmd-personal-modal v-if="modalVisible===true" :visible="modalVisible" :close="close"
+                        :row-id="selectRowId"></hmd-personal-modal>
+
+<!--    抽屉-->
+    <a-drawer
+        title="详情"
+        :width="720"
+        :visible="drawerVisible"
+        :body-style="{ paddingBottom: '80px' }"
+        @close="drawerClose"
+    >
+      <hmd-personal-drawer-content  v-if="drawerVisible" :row-id="selectRowId"></hmd-personal-drawer-content>
+    </a-drawer>
+
   </div>
 
 </template>
@@ -64,6 +89,7 @@ const columns = [
   {
     title: '序号',
     dataIndex: 'colIndex',
+    width:65,
     customRender: (text, record, index) => `${index + 1}`,
   },
   {
@@ -73,6 +99,7 @@ const columns = [
   {
     title: '角色名',
     dataIndex: 'roleName',
+    scopedSlots: { customRender: 'roleName' },
   },
   {
     title: '角色',
@@ -106,15 +133,17 @@ const columns = [
 module.exports = {
   props: {},
   components: {
-    'hmdPersonalModal': httpVueLoader('/template/jx3/hmdPersonalModal.vue')
+    'hmdPersonalModal': httpVueLoader(urlPrefix+'/template/jx3/hmdPersonalModal.vue'),
+    'hmdPersonalDrawerContent': httpVueLoader(urlPrefix+'/template/jx3/hmdPersonalDrawerContent.vue')
   },
   data() {
     return {
       roleName: null,
       uid: null,
       columns: columns,
-      visible: false,
-      hmdModelParam: null,
+      modalVisible: false,
+      drawerVisible: false,
+      selectRowId: null,
       data: [],
       pagination: {
         pageNo: 1,
@@ -140,6 +169,14 @@ module.exports = {
 
   },
   methods: {
+    drawerClose(){
+      this.drawerVisible = false
+      this.selectRowId = null
+    },
+    showDetail(record){
+      this.selectRowId = record.id
+      this.drawerVisible = true
+    },
     test(){
       this.$router.push({path:'/autoCode'});
     },
@@ -152,7 +189,8 @@ module.exports = {
       this.getTableData(1, this.pagination.pageSize)
     },
     close(refreshtable) {
-      this.visible = false
+      this.modalVisible = false
+      this.selectRowId = null
       if (refreshtable) {
         this.getTableData(this.pagination.pageNo, this.pagination.pageSize)
       }
@@ -167,8 +205,10 @@ module.exports = {
       }
     },
     showHmdModal(record) {
-      this.hmdModelParam = record
-      this.visible = true;
+      if(record){
+        this.selectRowId = record.id
+      }
+      this.modalVisible = true;
     },
     initTable() {
       this.getTableData(this.pagination.pageNo, this.pagination.pageSize)

@@ -6,7 +6,7 @@
 
     <select id="getAllHmdTeamWithPage" parameterType="string"
             resultType="com.lld.autocode.jx3.hmd.entity.HmdTeam">
-        select *
+        select id,server_name,team_name,yy_channel,qq_group
         from jx3_hmd_team
         <where>
 

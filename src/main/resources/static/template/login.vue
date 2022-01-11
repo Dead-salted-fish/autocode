@@ -46,7 +46,7 @@
 
             <a-col :span="24">
               <div class="content_button login_button">
-                <a-button type="primary" @click="login">登录</a-button>
+                <a-button type="primary" @click="login" v-on:keyup.enter.native="login()">登录</a-button>
               </div>
             </a-col>
 
@@ -75,6 +75,14 @@ module.exports = {
         wrapperCol: {span: 24},
       },
     }
+  },
+  mounted() {
+    // 绑定enter事件
+    this.enterKeyup();
+  },
+  destroyed() {
+    // 销毁enter事件
+    this.enterKeyupDestroyed();
   },
   created: function () {
     this.getCaptcha()
@@ -123,7 +131,23 @@ module.exports = {
     },
     reloadCaptcha() {
       this.getCaptcha()
-    }
+    },
+    enterKey(event) {
+        const code = event.keyCode
+            ? event.keyCode
+            : event.which
+                ? event.which
+                : event.charCode;
+        if (code == 13) {
+          this.login();
+        }
+    },
+    enterKeyupDestroyed() {
+      document.removeEventListener("keyup", this.enterKey);
+    },
+    enterKeyup() {
+      document.addEventListener("keyup", this.enterKey);
+    },
 
   }
 }

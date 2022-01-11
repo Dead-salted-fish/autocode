@@ -41,4 +41,9 @@ public class HmdPersonalController {
         return hmdPersonalService.deleteHmdPersonal(personal);
     }
 
+    @GetMapping("/jx3/hmdPersonal/getById")
+    public ReturnMessage getById(HmdPersonal hmdPersonal){
+        return hmdPersonalService.getById(hmdPersonal);
+    }
+
 }
