@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <script src="/js/vue-resource.js"></script>
+    <script src="/js/vue.js"></script>
+    <!--antd组件-->
+    <script src="/js/moment.js"></script>
+    <script src="/js/antd.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/antd.css"/>
+    <!--   解析模板-->
+    <script src="/js/httpVueLoader.js"></script>
+    <!--    vue路由-->
+    <script src="/js/vue-router.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <!--httpApi-->
+    <script src="/js/httpApi.js"></script>
+    <!-- url-->
+    <script src="/js/urlSetting.js"></script>
+    <!--   模板-->
+    <!--   必须在urlSetting.js后面引入，否则找不到urlPrefix变常-->
+    <script src="/js/template.js"></script>
+
+</head>
+<body>
+<div id="app" style="height: 100%">
+    <router-view/>
+</div>
+
+<!--    背景随机彩色-->
+<script src="/js/ribbon.js"></script>
+<script src="/js/index.js"></script>
+
+
+</body>
+<script type="text/javascript">
+    Vue.use(antd)
+    Vue.use(VueResource)
+    const router = new VueRouter()
+
+    let Menu = antd.Menu
+    console.log('Menu',Menu)
+
+    new Vue({
+        el: '#app',
+        components: {
+        },
+        data() {
+            return {}
+        },
+        created: function () {
+            this.initRoute()
+        },
+        router,
+        methods: {
+            async initRoute() {
+
+                router.addRoute(loginTemplate)
+                router.addRoute(defaultTemplate)
+                router.addRoute(mainTemplate)
+
+                routeCopy = this.$router
+
+                if (!window.localStorage.getItem("token")) {
+                    this.$router.push({path: '/login'});
+                }
+            }
+        }
+    })
+</script>
+</html>
