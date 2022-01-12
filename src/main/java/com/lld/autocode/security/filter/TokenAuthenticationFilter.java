@@ -49,7 +49,7 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         System.out.println("URL======"+request.getRequestURI());
         UsernamePasswordAuthenticationToken authentication = null;
         try {
-            authentication = getAuthentication(request);
+            authentication = getAuthentication(request,response);
         } catch (Exception e) {
             String url =  request.getRequestURI();
             if(url.startsWith("/main")){
@@ -66,13 +66,21 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
 
     }
 
-    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) throws JsonProcessingException {
+    private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request,HttpServletResponse response) throws JsonProcessingException {
+        boolean websocketrequest = false;
         // 获取Token字符串，token 置于 header 里
         String token = request.getHeader("token");
         if (!StringUtils.hasText(token)) {
             token = request.getParameter("token");
         }
+        if (!StringUtils.hasText(token)) {
+            token = request.getHeader("Sec-WebSocket-Protocol");
+            websocketrequest = true;
+        }
         if (token != null && !"".equals(token.trim())) {
+            if(websocketrequest){
+                response.setHeader("Sec-WebSocket-Protocol",token);
+            }
             // 从Token中解密获取用户名
 //            System.out.println(token);
             Long userId = JwtTokenUtil.getUserRoIdFromToken(token);

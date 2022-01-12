@@ -97,6 +97,7 @@ module.exports = {
   },
   created: function () {
     this.getRoute()
+    createWebSocket()
   },
   methods: {
     username() {

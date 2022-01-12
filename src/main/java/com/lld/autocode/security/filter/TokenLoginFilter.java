@@ -81,11 +81,11 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtTokenUtil.createToken(user.getUsername(), user.getId());
         HashMap<Object, Object> map = new HashMap<>();
         map.put("token", token);
-
         map.put("roles", user.getAuthorities().stream().map(item -> {
             return item.getAuthority();
         }).collect(Collectors.toList()));
         map.put("loginName", user.getUsername());
+        map.put("uid", user.getId());
 
         redisTemplate.opsForValue().set(BaseConstant.REDIS_TOKEN_PREFIX +user.getId(), token, 60 * 30, TimeUnit.SECONDS);
         //脱敏,意思一下
