@@ -69,6 +69,7 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/css/**",
                 "/js/**",
                 "/template/**",
+                "/images/**",
                 "/favicon.ico",
                 "/testhttp",
                 "/autoCodeMain",

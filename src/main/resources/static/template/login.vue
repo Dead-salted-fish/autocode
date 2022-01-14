@@ -89,6 +89,15 @@ module.exports = {
 
   },
   methods: {
+    showWelcome(){
+      this.$notification.open({
+        message: '登陆成功',
+        description:'欢迎回来',
+        onClick: () => {
+          console.log('Notification Clicked!');
+        },
+      });
+    },
     async login() {
       this.$refs['loginForm'].validate(async(valid) => {
         if (valid) {
@@ -98,8 +107,8 @@ module.exports = {
             for (const key in result.returnData) {
               localStorage.setItem(key, result.returnData[key])
             }
-            this.$message.success('成功');
             this.$router.push({path: 'main'});
+            this.showWelcome();
           } else {
             console.log(result)
             this.$message.error(result.message);
@@ -109,9 +118,6 @@ module.exports = {
           return false;
         }
       });
-
-
-
     },
     async getCaptcha() {
       // this.$http.get('/captcha.jpg', {responseType: 'blob'})

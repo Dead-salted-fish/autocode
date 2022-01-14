@@ -20,9 +20,12 @@ public class SystemController {
     @Autowired
     private SystemService systemService;
 
+    //没用的方法
     @GetMapping("/system/getRoute")
     public ReturnMessage getRoute(HttpServletRequest req){
 
         return systemService.getRoute();
     }
+
+
 }

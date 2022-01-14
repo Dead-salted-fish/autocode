@@ -97,7 +97,8 @@ module.exports = {
   },
   created: function () {
     this.getRoute()
-    createWebSocket()
+    //建立weosocket连接
+    createWebSocket(this.$notification)
   },
   methods: {
     username() {
@@ -106,7 +107,7 @@ module.exports = {
 
     },
     async getRoute() {
-      let result = await httpGet(appUrlSetting['getRoute'])
+      let result = await httpGet(appUrlSetting['getMenus'])
       if (result && result.code === '200') {
         this.menus = result.returnData
       } else {

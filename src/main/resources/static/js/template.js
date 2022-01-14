@@ -26,6 +26,14 @@ const mainTemplate = {
         {
             path: '/jx3/hmdTeam',
             component: httpVueLoader(urlPrefix+'/template/jx3/hmdTeam.vue')
+        },
+        {
+            path: '/system/menuManage',
+            component: httpVueLoader(urlPrefix+'/template/system/menuManage.vue')
+        },
+        {
+            path: '/*',
+            component: httpVueLoader(urlPrefix+'/template/404.vue')
         }
     ]
 }

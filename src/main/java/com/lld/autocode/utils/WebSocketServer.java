@@ -48,11 +48,6 @@ public class WebSocketServer {
         sessionPools.put(uid, session);
         addOnlineCount();
         System.out.println(uid + "加入webSocket！当前人数为" + onlineNum);
-        try {
-            sendMessage(session, "欢迎" + uid + "加入连接！");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     //关闭连接时调用

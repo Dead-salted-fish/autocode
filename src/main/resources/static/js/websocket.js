@@ -1,9 +1,10 @@
 var websocket = null;
-
+var tempNotification = null
 //判断当前浏览器是否支持WebSocket
-function createWebSocket(){
+function createWebSocket(notification){
     var host = document.location.host;
     if ('WebSocket' in window) {
+        tempNotification = notification
         let uid = window.localStorage.getItem("uid")
         let token = window.localStorage.getItem("token")
         console.log("浏览器支持Websocket")
@@ -28,7 +29,13 @@ function createWebSocket(){
     websocket.onmessage = function(event) {
         console.log("接收到消息的回调方法")
         console.log("这是后台推送的消息："+event.data);
-        //websocket.close();
+        tempNotification.open({
+            message: '后端推送消息',
+            description:event.data,
+            onClick: () => {
+                console.log('Notification Clicked!');
+            },
+        });
     }
 
 //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。

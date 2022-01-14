@@ -15,11 +15,17 @@ import java.util.List;
  * @date 2021/9/22 15:13
  */
 @Mapper
-public interface SystemMapper extends BaseMapper<MenuInfo> {
-
-List<MenuInfo> getBaseMenu();
+public interface MenuInfoMapper extends BaseMapper<MenuInfo> {
+    List<MenuInfo> getBaseMenu();
 
     List<MenuInfo>   getMenuChildren(@Param("parentId") Long id);
 
+    List<TreeNode> getParentMenusTree();
+
+    List<TreeNode>   getTreeChildren(@Param("parentId") Long id);
+
+    void addMenu(MenuInfo menuInfo);
+
+    int deleteById(Long id);
 
 }

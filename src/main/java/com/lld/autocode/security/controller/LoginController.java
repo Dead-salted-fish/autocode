@@ -3,6 +3,7 @@ package com.lld.autocode.security.controller;
 import com.google.code.kaptcha.Producer;
 import com.lld.autocode.security.entity.SysCaptcha;
 import com.lld.autocode.utils.ReturnMessage;
+import com.lld.autocode.utils.WebSocketServer;
 import com.xiaoju.uemc.tinyid.client.utils.TinyId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

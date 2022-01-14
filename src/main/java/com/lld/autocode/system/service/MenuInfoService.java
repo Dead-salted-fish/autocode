@@ -9,8 +9,15 @@ import com.lld.autocode.utils.ReturnMessage;
  * @author: wzl
  * @date 2022/1/7 10:31
  */
-public interface SystemService extends IService<MenuInfo> {
-    ReturnMessage getRoute();
+public interface MenuInfoService extends IService<MenuInfo> {
 
+    ReturnMessage getMenusList();
 
+    ReturnMessage getParentMenusTree();
+
+    ReturnMessage getMenus();
+
+    ReturnMessage addMenu(MenuInfo menuInfo);
+
+    ReturnMessage deleteMenu(MenuInfo menuInfo);
 }

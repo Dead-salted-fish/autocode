@@ -15,10 +15,17 @@ const jx3UrlSetting = {
 }
 
 const appUrlSetting = {
-    getRoute: urlPrefix+'/system/getRoute',
+    getMenus: urlPrefix+'/system/menu/getMenus',
 }
 
 const loginUrlSetting = {
     userlogin: urlPrefix + '/userlogin',
     captcha: urlPrefix + '/captcha'
+}
+
+const systemUrlSetting = {
+    getMenusList: urlPrefix + '/system/menu/getMenusList',
+    getParentMenusTree:urlPrefix + '/system/menu/getParentMenusTree',
+    addMenu:urlPrefix + '/system/menu/addMenu',
+    deleteMenu:urlPrefix + '/system/menu/deleteMenu',
 }

@@ -1,7 +1,10 @@
 package com.lld.autocode.codegenerator.controller;
 
+import com.lld.autocode.jx3.hmd.entity.HmdPersonal;
 import com.lld.autocode.utils.WebSocketServer;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +22,9 @@ import java.util.Enumeration;
 public class MainController {
     @Autowired
     private WebSocketServer webSocketServer;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @GetMapping("/autocode")
     public String autocode(){
@@ -52,7 +58,22 @@ public class MainController {
     @ResponseBody
     public String test(HttpServletRequest req){
 
-        webSocketServer.sendInfo(1L,"6666666666");
+//        webSocketServer.sendInfo(1L,"6666666666");
+        HmdPersonal hmdPersonal = new HmdPersonal();
+        hmdPersonal.setId(1L);
+
+        rabbitTemplate.convertAndSend("testexchange" ,"testkey",hmdPersonal);
+        return "App";
+    }
+
+    @GetMapping("/test1")
+    @ResponseBody
+    public String test1(HttpServletRequest req){
+
+//        webSocketServer.sendInfo(1L,"6666666666");
+        HmdPersonal hmdPersonal = new HmdPersonal();
+        hmdPersonal.setId(2L);
+        rabbitTemplate.convertAndSend("testexchange" ,"testkey1",hmdPersonal);
         return "App";
     }
 
