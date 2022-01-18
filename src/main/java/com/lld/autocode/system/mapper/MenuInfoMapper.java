@@ -16,9 +16,13 @@ import java.util.List;
  */
 @Mapper
 public interface MenuInfoMapper extends BaseMapper<MenuInfo> {
-    List<MenuInfo> getBaseMenu();
+    List<MenuInfo> getMenusWithoutBan();
+
+    List<MenuInfo> getMenusIncludeBan();
 
     List<MenuInfo>   getMenuChildren(@Param("parentId") Long id);
+
+    List<MenuInfo>   getMenuListChildren(@Param("parentId") Long id);
 
     List<TreeNode> getParentMenusTree();
 
@@ -28,4 +32,7 @@ public interface MenuInfoMapper extends BaseMapper<MenuInfo> {
 
     int deleteById(Long id);
 
+    MenuInfo selectById(Long id);
+
+   int updateMenuById(MenuInfo menuInfo);
 }

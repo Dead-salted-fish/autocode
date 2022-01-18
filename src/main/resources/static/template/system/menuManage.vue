@@ -22,9 +22,9 @@
                 更多 <a-icon type="down" />
               </a>
               <a-menu slot="overlay">
-                <a-menu-item key="0">
-                  <a>添加下级</a>
-                </a-menu-item>
+<!--                <a-menu-item key="0">-->
+<!--                  <a>添加下级</a>-->
+<!--                </a-menu-item>-->
 
                 <a-menu-item key="1">
                   <a-popconfirm placement="topLeft"
@@ -132,10 +132,22 @@ module.exports = {
       this.getMenus()
     },
 
+    setRowKey(data){
+      if (data) {
+        data.forEach(item => {
+          item['key'] = item.id;
+          if (item.children) {
+            this.setRowKey(item.children);
+          }
+        });
+      }
+    },
+
     async getMenus() {
       let result = await httpGet(systemUrlSetting['getMenusList']);
 
       if (result && result.code === "200") {
+        this.setRowKey(result.returnData)
         this.menus = result.returnData
       } else {
         this.$message.error(result.message);

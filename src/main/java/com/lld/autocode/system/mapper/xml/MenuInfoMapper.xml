@@ -3,12 +3,24 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lld.autocode.system.mapper.MenuInfoMapper">
+    <select id="selectById" parameterType="long" resultType="com.lld.autocode.system.entity.MenuInfo">
+        select *
+        from menu_info
+        where id = #{id}
+    </select>
 
-    <select id="getBaseMenu" resultType="com.lld.autocode.system.entity.MenuInfo">
+    <select id="getMenusWithoutBan" resultType="com.lld.autocode.system.entity.MenuInfo">
         select *
         from menu_info
         where parent_menu_id = 0
           and ban != '1'
+        ORDER BY sort ASC
+    </select>
+
+    <select id="getMenusIncludeBan" resultType="com.lld.autocode.system.entity.MenuInfo">
+        select *
+        from menu_info
+        where parent_menu_id = 0
         ORDER BY sort ASC
     </select>
 
@@ -20,21 +32,26 @@
         ORDER BY sort ASC
     </select>
 
+    <select id="getMenuListChildren" parameterType="long" resultType="com.lld.autocode.system.entity.MenuInfo">
+        select *
+        from menu_info
+        where parent_menu_id = #{parentId}
+        ORDER BY sort ASC
+    </select>
+
     <select id="getParentMenusTree" resultType="com.lld.autocode.system.entity.TreeNode">
-        select id as `key` ,
+        select id as `key`,
                title
         from menu_info
         where parent_menu_id = 0
-          and ban != '1'
         ORDER BY sort ASC
     </select>
 
     <select id="getTreeChildren" parameterType="long" resultType="com.lld.autocode.system.entity.TreeNode">
-        select id as `key` ,
+        select id as `key`,
                title
         from menu_info
         where parent_menu_id = #{parentId}
-          and ban != '1'
         ORDER BY sort ASC
     </select>
 
@@ -54,14 +71,32 @@
                                `create_time`,
                                `update_by`,
                                `update_time`)
-            VALUES (#{id}, #{menuName}, #{title}, #{menuType},
-                    #{parentMenuId}, #{routerPath}, #{componentPath}, #{sort},
-                    #{ban}, #{remark}, #{version}, #{creator},
-                    #{createTime}, #{updateBy}, #{updateTime});
+        VALUES (#{id}, #{menuName}, #{title}, #{menuType},
+                #{parentMenuId}, #{routerPath}, #{componentPath}, #{sort},
+                #{ban}, #{remark}, #{version}, #{creator},
+                #{createTime}, #{updateBy}, #{updateTime});
 
     </insert>
 
     <delete id="deleteById" parameterType="long">
-        delete from menu_info where id = #{id}
+        delete
+        from menu_info
+        where id = #{id}
     </delete>
+
+    <update id="updateMenuById">
+        update menu_info
+        set menu_name      = #{menuName},
+            title          = #{title},
+            menu_type      = #{menuType},
+            parent_menu_id = #{parentMenuId},
+            router_path    = #{routerPath},
+            component_path = #{componentPath},
+            sort           = #{sort},
+            ban            = #{ban},
+            version        = #{version},
+            update_by      = #{updateBy},
+            update_time    = #{updateTime}
+        where id = #{id}
+    </update>
 </mapper>

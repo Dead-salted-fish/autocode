@@ -50,5 +50,11 @@ public class MenuInfoController {
         return menuInfoService.deleteMenu(menuInfo);
     }
 
+    //更新菜单
+    @PostMapping("/menu/updateMenu")
+    public ReturnMessage updateMenu(@RequestBody MenuInfo menuInfo, HttpServletRequest req){
+        return menuInfoService.updateMenu(menuInfo);
+    }
+
 
 }

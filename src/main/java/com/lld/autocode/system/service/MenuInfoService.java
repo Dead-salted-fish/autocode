@@ -20,4 +20,6 @@ public interface MenuInfoService extends IService<MenuInfo> {
     ReturnMessage addMenu(MenuInfo menuInfo);
 
     ReturnMessage deleteMenu(MenuInfo menuInfo);
+
+    ReturnMessage updateMenu(MenuInfo menuInfo);
 }

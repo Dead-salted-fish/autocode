@@ -6,7 +6,9 @@
         v-bind="formItemLayout"
     >
       <a-form-item label="菜单级别">
-        <a-radio-group v-decorator="['menuLeavel', { initialValue: 1}]" @change="menuLeavelChange">
+        <a-radio-group
+            v-decorator="['menuLeavel', { initialValue: 1}]"
+            @change="menuLeavelChange">
           <a-radio :value="1">
             主菜单
           </a-radio>
@@ -18,7 +20,7 @@
 
       <a-form-item label="父菜单" v-if="menuLeavel === 2">
         <a-tree-select
-            v-decorator="['parentMenu', { rules: [{ required: true, message: '请选择父菜单' }] }]"
+            v-decorator="['parentMenuId', { rules: [{ required: true, message: '请选择父菜单' }] }]"
             show-search
             style="width: 100%"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
@@ -78,7 +80,7 @@
       </a-form-item>
 
       <a-form-item label="是否启用">
-        <a-switch v-decorator="['ban', { initialValue: true,valuePropName: 'checked'}]"/>
+        <a-switch v-decorator="['isban', { initialValue: true,valuePropName: 'checked'}]"/>
       </a-form-item>
     </a-form>
     <div
@@ -112,7 +114,7 @@ module.exports = {
       type: Object,
       default: null
     },
-    close:{
+    close: {
       type: Function,
       default: null
     }
@@ -131,16 +133,30 @@ module.exports = {
   beforeCreate() {
     this.form = this.$form.createForm(this, {name: 'validate_other'});
   },
-  created: function () {
+  created: async function () {
     this.getParentMenusTree()
+    this.initForm()
   },
   methods: {
+    initForm() {
+      if (this.menu) {
+        this.menu.isban = this.menu.ban === '0' ? true : false
+        this.menuLeavel = this.menu.parentMenuId === 0 ? 1 : 2;
+        this.menu.menuLeavel = this.menuLeavel
+        this.$nextTick(() => {
+          this.form.setFieldsValue(this.menu)
+        })
+      }
+    },
     loop(tree) {
       if (tree) {
         tree.forEach(item => {
           item.label = item.title;
           item.value = item.key;
           item['selectable'] = true;
+          if (this.menu) {
+            item['selectable'] = item.key === this.menu.id ? false : true
+          }
           if (item.children) {
             this.loop(item.children);
           }
@@ -158,26 +174,34 @@ module.exports = {
     },
     menuLeavelChange(e) {
       this.menuLeavel = e.target.value
+      if (this.menuLeavel === 2 && this.menu && this.menu.parentMenuId !== 0) {
+        this.$nextTick(() => {
+          this.form.setFieldsValue({
+            parentMenuId: this.menu.parentMenuId
+          })
+        })
+      }
     },
     closeDrawer() {
-      this.close&&this.close(false)
+      this.close && this.close(false)
     },
     submit() {
       this.form.validateFields(async (err, values) => {
         if (!err) {
-          values.ban = values.ban?'0':'1'
-          values.parentMenuId = values.menuLeavel===1?'0':values.parentMenu
+          values.ban = values.isban ? '0' : '1'
+          values.parentMenuId = values.menuLeavel === 1 ? '0' : values.parentMenuId
           console.log(values)
           let result = null
           if (this.menu) {
-
+            values.id = this.menu.id
+            result = await httpPost(systemUrlSetting['updateMenu'], values)
           } else {
-             result = await httpPost(systemUrlSetting['addMenu'], values)
+            result = await httpPost(systemUrlSetting['addMenu'], values)
           }
           if (result && result.code === "200") {
             this.$message.success(result.message);
-            this.close&&this.close(true)
-          }else {
+            this.close && this.close(true)
+          } else {
             this.$message.error(result.message);
           }
         }

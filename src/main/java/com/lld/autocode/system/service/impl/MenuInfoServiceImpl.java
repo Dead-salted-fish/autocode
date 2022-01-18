@@ -23,9 +23,19 @@ public class MenuInfoServiceImpl extends ServiceImpl<MenuInfoMapper, MenuInfo> i
 
     @Override
     public ReturnMessage getMenus() {
-        List<MenuInfo> baseMenus = this.baseMapper.getBaseMenu();
+        List<MenuInfo> baseMenus = this.baseMapper.getMenusWithoutBan();
         setMenuChildren(baseMenus);
         return ReturnMessage.ok(baseMenus);
+    }
+
+    private void setMenuChildren(List<MenuInfo> baseMenus){
+        for(MenuInfo menuInfo :baseMenus){
+            List<MenuInfo> menuChildren = this.baseMapper.getMenuChildren(menuInfo.getId());
+            if(menuChildren.size()>0||(menuInfo.getRouterPath()==null||menuInfo.getRouterPath().trim().equals(""))){
+                menuInfo.setChildren(menuChildren);
+                setMenuChildren(menuChildren);
+            }
+        }
     }
 
     @Override
@@ -44,21 +54,32 @@ public class MenuInfoServiceImpl extends ServiceImpl<MenuInfoMapper, MenuInfo> i
     }
 
     @Override
+    public ReturnMessage updateMenu(MenuInfo menuInfo) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        MenuInfo oldItem = this.baseMapper.selectById(menuInfo.getId());
+        menuInfo.updateBase(oldItem.getVersion(),user.getId());
+        this.baseMapper.updateMenuById(menuInfo);
+        return ReturnMessage.ok();
+    }
+
+    @Override
     public ReturnMessage getMenusList() {
-        List<MenuInfo> baseMenus = this.baseMapper.getBaseMenu();
-        setMenuChildren(baseMenus);
+        List<MenuInfo> baseMenus = this.baseMapper.getMenusIncludeBan();
+        setMenuListChildren(baseMenus);
         return ReturnMessage.ok(baseMenus);
     }
 
-    private void setMenuChildren(List<MenuInfo> baseMenus){
+    private void setMenuListChildren(List<MenuInfo> baseMenus){
         for(MenuInfo menuInfo :baseMenus){
-            List<MenuInfo> menuChildren = this.baseMapper.getMenuChildren(menuInfo.getId());
+            List<MenuInfo> menuChildren = this.baseMapper.getMenuListChildren(menuInfo.getId());
             if(menuChildren.size()>0||(menuInfo.getRouterPath()==null||menuInfo.getRouterPath().trim().equals(""))){
                 menuInfo.setChildren(menuChildren);
                 setMenuChildren(menuChildren);
             }
         }
     }
+
+
 
     @Override
     public ReturnMessage getParentMenusTree() {

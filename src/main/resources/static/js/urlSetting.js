@@ -27,5 +27,6 @@ const systemUrlSetting = {
     getMenusList: urlPrefix + '/system/menu/getMenusList',
     getParentMenusTree:urlPrefix + '/system/menu/getParentMenusTree',
     addMenu:urlPrefix + '/system/menu/addMenu',
+    updateMenu:urlPrefix + '/system/menu/updateMenu',
     deleteMenu:urlPrefix + '/system/menu/deleteMenu',
 }
