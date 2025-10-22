@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lld.autocode.mapper.AutoCodeMapper">
+
+
+    <select id="getAlltables" resultType="com.lld.autocode.entity.TableInfo">
+        SELECT
+        TABLE_NAME as table_name,
+        TABLE_COMMENT as table_comment
+        FROM INFORMATION_SCHEMA.TABLES
+        WHERE TABLE_SCHEMA = DATABASE()
+        <if test="tableInfoDto.tableName != null and tableInfoDto.tableName != ''">
+            AND TABLE_NAME LIKE CONCAT('%',#{tableInfoDto.tableName},'%')
+        </if>
+    </select>
+
+    <select id="getTableMetaDate" resultType="com.lld.autocode.entity.TableMetaData">
+        SELECT COLUMN_NAME    as column_name,
+               DATA_TYPE as data_type,
+               CHARACTER_MAXIMUM_LENGTH as character_maximum_length,
+               IS_NULLABLE    as null_able,
+               COLUMN_DEFAULT as column_default,
+               COLUMN_COMMENT as column_comment,
+               EXTRA          as extra,
+               COLUMN_KEY     as column_key
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = #{tableName}
+        ORDER BY ORDINAL_POSITION
+    </select>
+</mapper>
