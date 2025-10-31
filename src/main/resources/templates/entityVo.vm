@@ -1,0 +1,27 @@
+#if($imports && $imports.size() > 0)
+    #foreach($import in $imports)
+import $import;
+    #end
+#end
+
+/**
+ #if($tableComment)
+ *$tableComment
+ #else
+ *
+ #end
+ */
+
+@Data
+public class $className {
+
+#foreach($field in $fields)
+    #if($field.columnComment && $field.columnComment != "")
+    /**
+     * $field.columnComment
+     */
+    #end
+    private $field.javaType $field.attributeName;
+
+#end
+}

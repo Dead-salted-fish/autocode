@@ -1,5 +1,6 @@
 package com.lld.autocode.service;
 
+import com.lld.autocode.entity.dto.GenerateCodeDto;
 import com.lld.autocode.entity.dto.TableInfoDto;
 import com.lld.saltedfishutils.web.result.ReturnResult;
 
@@ -16,4 +17,8 @@ public interface AutoCodeService {
        * 获取所有java类型
        * **/
     ReturnResult getJavaTypes();
+     /**
+     * 生成代码
+     * **/
+    ReturnResult generateCode(GenerateCodeDto generateCodeDto);
 }

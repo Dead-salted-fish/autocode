@@ -1,9 +1,9 @@
-package com.lld.autocode.entity;
+package com.lld.autocode.entity.dto;
 
 import lombok.Data;
 
 @Data
-public class TableMetaData {
+public class TableMetaDataDto {
     /**
      *  表字段信息
      * **/
@@ -12,6 +12,18 @@ public class TableMetaData {
      *  字段类型
      * **/
     private String dataType;
+    /**
+     * javaType
+     * **/
+    private String javaType;
+    /**
+     * package
+     * **/
+    private String packageUrl;
+    /**
+     *  字段是否需要导包
+     * **/
+    private String needImport;
     /**
      *  字段最大或者最小长度
      * **/

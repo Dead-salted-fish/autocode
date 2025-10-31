@@ -2,8 +2,12 @@ server:
   port: 28900
 
 spring:
+  velocity:
+      resource-loader-path: classpath:/templates/
   application:
     name: autocode   # 服务名
+
+
 
   cloud:
     # nacos 配置中心
@@ -32,3 +36,8 @@ mybatis-plus:
   global-config:
     db-config:
       update-strategy: ignored
+
+autocode:
+  # 模板路径
+  generate-path: E:\MyProject\client\autocode\src\main\resources\generateResult
+

@@ -2,7 +2,9 @@ package com.lld.autocode.mapstruct;
 
 
 import com.lld.autocode.entity.TableInfo;
+import com.lld.autocode.entity.TableMetaData;
 import com.lld.autocode.entity.Vo.TableInfoVo;
+import com.lld.autocode.entity.dto.TableMetaDataDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -15,4 +17,7 @@ public interface MSAutoCodeMapper {
 
     TableInfoVo tableInfoTotableInfoVo(TableInfo tableInfo);
     List<TableInfoVo> tableInfoListTotableInfoVoList(List<TableInfo> alltables);
+
+    TableMetaDataDto TableMetaDataToTableMetaDataDto(TableMetaData tableMetaData);
+    List<TableMetaDataDto> TableMetaDataListToTableMetaDataDtoList(List<TableMetaData> list);
 }

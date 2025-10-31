@@ -1,0 +1,37 @@
+#if($imports && $imports.size() > 0)
+    #foreach($import in $imports)
+import $import;
+    #end
+#end
+
+@RequestMapping("/${lowerCaseClassName}")
+@RestController
+public class ${className}Controller {
+
+    private final ${className}Service ${lowerCaseClassName}Service;
+
+    public ${className}Controller(${className}Service ${lowerCaseClassName}Service) {
+        this.${lowerCaseClassName}Service = ${lowerCaseClassName}Service;
+    }
+
+    @GetMapping("/list")
+    public ReturnResult list(${className}Dto ${lowerCaseClassName}Dto) {
+        return ${lowerCaseClassName}Service.list(${lowerCaseClassName}Dto);
+    }
+
+    @PostMapping("/add")
+    public ReturnResult add(@RequestBody ${className}Dto ${lowerCaseClassName}Dto) {
+        return ${lowerCaseClassName}Service.add(${lowerCaseClassName}Dto);
+    }
+
+    @PostMapping("/update")
+    public ReturnResult update(@RequestBody ${className}Dto ${lowerCaseClassName}Dto) {
+        return ${lowerCaseClassName}Service.update(${lowerCaseClassName}Dto);
+    }
+
+    @PostMapping("/delete")
+    public ReturnResult delete(@RequestBody ${className}Dto ${lowerCaseClassName}Dto) {
+        return ${lowerCaseClassName}Service.delete(${lowerCaseClassName}Dto);
+    }
+
+}

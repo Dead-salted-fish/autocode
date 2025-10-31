@@ -1,12 +1,11 @@
 package com.lld.autocode.controller;
 
+import com.lld.autocode.entity.dto.GenerateCodeDto;
 import com.lld.autocode.entity.dto.TableInfoDto;
 import com.lld.autocode.service.AutoCodeService;
 import com.lld.saltedfishutils.web.result.ReturnResult;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 @RequestMapping("/autocode")
 @RestController
 public class AutoCodeController {
@@ -16,7 +15,6 @@ public class AutoCodeController {
     public AutoCodeController(AutoCodeService autoCodeService) {
         this.autoCodeService = autoCodeService;
     }
-
 
     @GetMapping ("/getAlltables")
     public ReturnResult getAlltables(TableInfoDto tableInfoDto){
@@ -31,5 +29,10 @@ public class AutoCodeController {
     @GetMapping ("/getJavaTypes")
     public ReturnResult getJavaTypes(TableInfoDto getJavaTypes){
         return autoCodeService.getJavaTypes();
+    }
+
+    @PostMapping ("/generateCode")
+    public ReturnResult generateCode(@RequestBody GenerateCodeDto generateCodeDto){
+        return autoCodeService.generateCode(generateCodeDto);
     }
 }
