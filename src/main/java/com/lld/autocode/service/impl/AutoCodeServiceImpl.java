@@ -8,24 +8,17 @@ import com.lld.autocode.entity.dto.GenerateCodeDto;
 import com.lld.autocode.entity.dto.TableInfoDto;
 import com.lld.autocode.entity.dto.TableMetaDataDto;
 import com.lld.autocode.generate.server.ServerGenerate;
+import com.lld.autocode.generate.web.WebGenerate;
 import com.lld.autocode.mapstruct.MSAutoCodeMapper;
 import com.lld.autocode.repository.AutoCodeRepository;
 import com.lld.autocode.service.AutoCodeService;
 import com.lld.autocode.utils.DatabaseTypeMapping;
 import com.lld.saltedfishutils.utils.MPPageConverter;
 import com.lld.saltedfishutils.web.result.ReturnResult;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 @Service
@@ -42,10 +35,14 @@ public class AutoCodeServiceImpl implements AutoCodeService {
 
     private List<ServerGenerate> serverGenerates;
 
-    public AutoCodeServiceImpl(AutoCodeRepository autoCodeRepository, VelocityEngine velocityEngine, List<ServerGenerate> serverGenerates) {
+    private List<WebGenerate> webGenerates;
+
+    public AutoCodeServiceImpl(AutoCodeRepository autoCodeRepository, VelocityEngine velocityEngine,
+                               List<ServerGenerate> serverGenerates, List<WebGenerate> webGenerates) {
         this.autoCodeRepository = autoCodeRepository;
         this.velocityEngine = velocityEngine;
         this.serverGenerates = serverGenerates;
+        this.webGenerates = webGenerates;
     }
 
     /**
@@ -108,6 +105,10 @@ public class AutoCodeServiceImpl implements AutoCodeService {
      * 获取web端代码
      **/
     private void generateWebTemplate(GenerateCodeDto generateCodeDto) {
+        for (WebGenerate webGenerate : webGenerates) {
+            Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto, webGenerate.getGenerateType());
+            webGenerate.doGenerate(stringObjectMap);
+        }
     }
    /**
      * 生成服务端代码
@@ -144,9 +145,9 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         }else if("Controller".toLowerCase().equals(lowerCaseType)){
             importPackageList.add("com.lld.saltedfishutils.web.result.ReturnResult");
             importPackageList.add("org.springframework.web.bind.annotation.*");
-
+        }else if("Service".toLowerCase().equals(lowerCaseType)||"ServiceImpl".toLowerCase().equals(lowerCaseType)){
+            importPackageList.add("com.lld.saltedfishutils.web.result.ReturnResult");
         }
-
 
 
         //属性内容
@@ -164,6 +165,7 @@ public class AutoCodeServiceImpl implements AutoCodeService {
             // 处理字段信息
             Map<String, String> fieldInfo = new HashMap<>();
             fieldInfo.put("javaType", tableMetaDataDto.getJavaType());
+            fieldInfo.put("upperCaseDataType", tableMetaDataDto.getDataType().toUpperCase());
             fieldInfo.put("columnName", tableMetaDataDto.getColumnName());
             fieldInfo.put("attributeName", generateCamelCaseName(tableMetaDataDto.getColumnName(), false));
             fieldInfo.put("columnComment", tableMetaDataDto.getColumnComment());

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="">
+## ##用来取消换行
+#macro(jdbcTypeHandler $dataType)
+ #if($dataType == "DATETIME")
+jdbcType="TIMESTAMP" ##
+ #else
+jdbcType="$dataType" ##
+ #end
+ #end
+
+
+    <resultMap id="BaseResultMap" type="">
+        #foreach($field in $fields)
+            #if($field.attributeName && $field.attributeName == "id")
+                <id property="id" column="id" jdbcType="BIGINT"/>
+            #else
+                <result property="${field.attributeName}" column="${field.columnName}" #jdbcTypeHandler($field.upperCaseDataType)/>
+            #end
+        #end
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        #foreach($field in $fields)
+            #set($column = $field.columnName.trim())  ${column}#if($foreach.hasNext),#end##
+            #if($foreach.index % 3 == 2 && $foreach.hasNext)
+
+            #end
+        #end
+        #if( 1==1)
+
+        #end
+    </sql>
+
+
+
+
+
+
+</mapper>

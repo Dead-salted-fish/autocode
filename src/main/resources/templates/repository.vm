@@ -1,0 +1,18 @@
+#if($imports && $imports.size() > 0)
+    #foreach($import in $imports)
+import $import;
+    #end
+#end
+import org.springframework.stereotype.Component;
+
+@Component
+public class ${className}Repository {
+
+    private ${className}Mapper ${lowerCaseClassName}Mapper;
+
+    public ${className}Repository(${className}Mapper ${lowerCaseClassName}Mapper) {
+        this.${lowerCaseClassName}Mapper = ${lowerCaseClassName}Mapper;
+    }
+
+
+}

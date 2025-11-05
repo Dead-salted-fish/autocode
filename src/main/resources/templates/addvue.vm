@@ -1,0 +1,170 @@
+<template>
+    <Card>
+        <Form ref="formRef" :wrapper-col="wrapperCol" :label-col="labelCol" :model="formState">
+            <Row>
+                #set($excludeFields = ["id","createTime", "updateTime", "creater", "updater"])
+                #foreach($field in $fields)
+                    #if(!$excludeFields.contains($field.attributeName))
+                        <Col span="24">
+                        <FormItem label="#if(${field.columnComment}) ${field.columnComment} #end" name="${field.attributeName}">
+                            <Input v-model:value="formState.${field.attributeName}" />
+                        </FormItem>
+                        </Col>
+
+                   #end
+                #end
+            </Row>
+
+
+            <Col span="24">
+            <FormItem :wrapper-col="{ span: 14, offset: 8 }">
+                <Button type="primary" v-on:click="submit">确定</Button>
+                <Button type="primary" style="margin-left: 40px" v-on:click="(e) => onClose()"
+                >取消</Button
+                >
+            </FormItem>
+            </Col>
+        </Form>
+    </Card>
+</template>
+
+<script lang="ts">
+    import {
+        Button,
+        Form,
+        FormItem,
+        Row,
+        Col,
+        Card,
+        Input,
+        Cascader,
+        RadioGroup,
+        RadioButton,
+        message,
+        TreeSelect,
+        InputNumber,
+        Select,
+        Textarea,
+    } from 'ant-design-vue'
+    import { jx3Http } from '/@/utils/http/axios'
+    import type { FormInstance } from 'ant-design-vue'
+    import { defineComponent, reactive, ref } from 'vue'
+    import UrlSetting from './UrlSetting'
+    import { keys } from 'xe-utils'
+    import { myutils } from '/@/utils/myutils/myutils'
+    const getSafeUndefined = myutils.getSafeUndefined
+    const labelCol = { style: { width: '80px' } }
+    const wrapperCol = { span: 16 }
+
+    const formRef = ref<FormInstance>()
+
+    export default defineComponent({
+        components: {
+            defHttp,
+            message,
+            Select,
+            Input,
+            InputNumber,
+            Button,
+            Form,
+            FormItem,
+            Row,
+            Col,
+            Card,
+            Cascader,
+            RadioGroup,
+            RadioButton,
+            TreeSelect,
+            Textarea,
+        },
+        props: {
+            onClose: Function,
+            title: String,
+            visible: Boolean,
+            initData: Object,
+        },
+        setup(props) {
+            interface  FormState
+            {
+
+        #foreach($field in $fields)
+            #if(!$excludeFields.contains($field.attributeName))
+                ${field.attributeName}:any
+            #end
+        #end
+            }
+
+            const formState = reactive < FormState > ({
+                #foreach($field in $fields)
+                    #if(!$excludeFields.contains($field.attributeName))
+                            ${field.attributeName}:getSafeUndefined(),
+                    #end
+                #end
+            })
+
+            return {
+                formRef,
+                formState,
+                labelCol: labelCol,
+                wrapperCol: wrapperCol,
+            }
+        },
+
+        data() {
+            return {
+
+            }
+        },
+        created() {
+           this.initFormStateData()
+        },
+
+        methods: {
+            // 初始化表单数据
+            async initFormStateData() {
+                if (this.initData) {
+                    let result = await jx3Http.get({
+                        url: UrlSetting.getDataById,
+                        params: { id: this.initData.id },
+                    })
+                    if (result && result['code'] === 200) {
+                        const resultData = result.data
+                        keys(this.formState).forEach((key) => {
+                            this.formState[key] = resultData[key]
+                        })
+                    } else {
+                        message.error(result.message)
+                    }
+                }
+            },
+
+            // 提交表单
+            submit() {
+                this.formRef
+                        ?.validateFields()
+                        .then(async (value: any) => {
+                            console.log('value', value)
+
+                            let urlStr = UrlSetting.add${className}
+                            if (this.initData) {
+                                value.id = this.initData.id
+                                urlStr = UrlSetting.udpate${className}
+                            }
+
+                            let result = await jx3Http.post({ url: urlStr, params: value })
+                            if (result && result['code'] === 200) {
+                                message.success(result.message)
+                                this.onClose && this.onClose(true)
+                            } else {
+                                message.error(result.message)
+                            }
+                        })
+                        .catch((err: any) => {
+                            console.log('表单验证失败', err)
+                        })
+            },
+        },
+    })
+</script>
+
+<style lang="less" scoped></style>

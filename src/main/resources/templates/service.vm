@@ -1,0 +1,24 @@
+#if($imports && $imports.size() > 0)
+    #foreach($import in $imports)
+import $import;
+    #end
+#end
+
+public interface ${className}Service {
+/**
+*  获取list
+* **/
+ReturnResult list(${className}Dto ${lowerCaseClassName}Dto);
+/**
+*  新增
+* **/
+ReturnResult add(${className}Dto ${lowerCaseClassName}Dto);
+/**
+* 更新
+* **/
+ReturnResult update(${className}Dto ${lowerCaseClassName}Dto);
+/**
+* 删除
+* **/
+ReturnResult delete(${className}Dto ${lowerCaseClassName}Dto);
+}

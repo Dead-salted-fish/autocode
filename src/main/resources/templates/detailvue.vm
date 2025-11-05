@@ -1,0 +1,88 @@
+#set($excludeFields = ["id","createTime", "updateTime", "creater", "updater"])
+<template>
+    <Card>
+        <Descriptions :bordered="true"  :column="2">
+    #foreach($field in $fields)
+        #if(!$excludeFields.contains($field.attributeName))
+            <DescriptionsItem label="$field.columnComment">{{formState.$field.attributeName}}</DescriptionsItem>
+        #end
+    #end
+        </Descriptions>
+    </Card>
+</template>
+
+<script lang="ts">
+    import { message,Card,Descriptions,DescriptionsItem } from 'ant-design-vue'
+    import {  jx3Http } from '/@/utils/http/axios'
+    import { defineComponent, reactive, ref } from 'vue'
+    import UrlSetting from './UrlSetting'
+    import { keys } from 'xe-utils'
+    import { myutils } from '/@/utils/myutils/myutils'
+    const getSafeUndefined = myutils.getSafeUndefined
+
+    export default defineComponent({
+        components: {
+            Card,Descriptions,DescriptionsItem
+        },
+        props: {
+            onClose: Function,
+            title: String,
+            visible: Boolean,
+            initData: Object,
+        },
+        setup(props) {
+
+            interface  FormState{
+                #foreach($field in $fields)
+                    #if(!$excludeFields.contains($field.attributeName))
+                   ${field.attributeName}:any
+                    #end
+                #end
+            }
+
+            const formState = reactive < FormState > ({
+                #foreach($field in $fields)
+                    #if(!$excludeFields.contains($field.attributeName))
+                            ${field.attributeName}:getSafeUndefined(),
+                    #end
+                #end
+            })
+
+            return {
+
+                formState,
+            }
+        },
+
+        data() {
+            return {
+
+            }
+        },
+        created() {
+            this.getDetailById()
+        },
+
+        methods: {
+            async getDetailById() {
+                if(!this.initData){
+                    return
+                }
+                let result = await jx3Http.get({
+                    url: UrlSetting.get${className}DetailById,
+                    params: { id: this.initData.id },
+                })
+                if (result && result['code'] === 200) {
+                    const resultData = result.data
+                    keys(this.formState).forEach((key) => {
+                        this.formState[key] = resultData[key]
+                    })
+                } else {
+                    message.error(result.message)
+                }
+            },
+        },
+    })
+</script>
+
+<style lang="less" scoped></style>

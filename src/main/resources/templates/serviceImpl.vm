@@ -1,0 +1,47 @@
+#if($imports && $imports.size() > 0)
+    #foreach($import in $imports)
+    import $import;
+    #end
+#end
+import org.springframework.stereotype.Service;
+
+@Service
+public class ${className}ServiceImpl implements ${className}Service {
+
+private ${className}Repository ${lowerCaseClassName}Repository;
+
+public ${className}ServiceImpl(${className}Repository ${lowerCaseClassName}Repository) {
+    this.${lowerCaseClassName}Repository = ${lowerCaseClassName}Repository;
+
+    }
+
+
+/**
+*  获取list
+* **/
+public ReturnResult list(${className}Dto ${lowerCaseClassName}Dto) {
+
+    return return ReturnResult.OK();
+}
+/**
+*  新增
+* **/
+public ReturnResult add(${className}Dto ${lowerCaseClassName}Dto){
+
+    return return ReturnResult.OK();
+}
+/**
+* 更新
+* **/
+public ReturnResult update(${className}Dto ${lowerCaseClassName}Dto){
+
+    return return ReturnResult.OK();
+}
+/**
+* 删除
+* **/
+public ReturnResult delete(${className}Dto ${lowerCaseClassName}Dto){
+
+    return return ReturnResult.OK();
+}
+}

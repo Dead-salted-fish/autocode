@@ -1,0 +1,257 @@
+<template>
+    <PageWrapper title="搜索列表">
+        <template #headerContent>
+            <Form ref="formRef" :wrapper-col="wrapperCol" :label-col="labelCol" :model="formState">
+                <Row :gutter="24">
+                    <Col span="8"></Col>
+                </Row>
+            </Form>
+        </template>
+
+        <div>
+            <Row :gutter="24" style="margin-bottom: 6px">
+                <Col span="4" :offset="20" style="display: flex; justify-content: flex-end">
+                <Space>
+                    <Button type="primary" v-on:click="openAdd">新增</Button>
+                    <Button type="primary" v-on:click="searchList">查询</Button>
+                </Space>
+                </Col>
+            </Row>
+
+            <Table :dataSource="tableSource" :columns="columns" :bordered="true" :pagination="false">
+                <template #bodyCell="{ column, record,index }">
+
+                    <template v-if="column.key === 'operation'">
+                        <Space>
+                            <a v-on:click="(e) => updateRecord(record)">修改</a>
+                            <Popconfirm
+                                    title="确定要删除吗"
+                                    ok-text="确定"
+                                    cancel-text="取消"
+                                    @confirm="(e) => deleteRecord(record)"
+                            >
+                                <a>删除</a>
+                            </Popconfirm>
+                        </Space>
+                    </template>
+                </template>
+            </Table>
+        </div>
+
+        <div>
+            <Drawer
+                    width="40%"
+                    v-model:open="showAddDrawer"
+                    placement="right"
+                    @close="(e) => closeAdd()"
+                    :maskClosable="false"
+                    :title="addDrawerTitle"
+            >
+                <Add${className} v-if="showAddDrawer" :on-close="closeAdd"
+                                   :init-data="tempRecord"></Add${className}>
+            </Drawer>
+
+            <Drawer
+                    width="40%"
+                    v-model:open="showDetailDrawer"
+                    placement="right"
+                    @close="(e) => closeDetail()"
+                    title="详情"
+            >
+                <${className}Detail v-if="showDetailDrawer" :on-close="closeDetail"
+                                      :init-data="tempRecord"></${className}Detail>
+            </Drawer>
+        </div>
+    </PageWrapper>
+</template>
+<script lang="ts">
+    import {
+        Table,
+        Button,
+        Drawer,
+        Space,
+        Form,
+        FormItem,
+        Input,
+        Row,
+        Col,
+        Popconfirm,
+        message,
+    } from 'ant-design-vue'
+    import {defineComponent, toRaw, ref, reactive} from 'vue'
+    import {getToken} from '/@/utils/auth'
+    import {PageWrapper} from '/@/components/Page'
+    import {defHttp, jx3Http} from '/@/utils/http/axios'
+    import type {FormInstance, SelectProps} from 'ant-design-vue'
+    import dayjs, {Dayjs} from 'dayjs'
+    import UrlSetting from './UrlSetting'
+    import Add${className} from './add.vue'
+    import ${className}Detail from './detail.vue'
+    import { myutils } from '/@/utils/myutils/myutils'
+    const getSafeUndefined = myutils.getSafeUndefined
+
+    let columns = [
+        {
+            title: '',
+            width: 1,
+            dataIndex: 'tmpIndex',
+            key: 'tmpIndex',
+            customRender: ({text, record, index}) => index + 1,
+        },
+        #foreach($field in $fields)
+        {
+            title: '#if($field.columnComment)${field.columnComment}#end',
+            dataIndex: '${field.attributeName}',
+            key: '${field.attributeName}',
+        },
+        #end
+        {
+            title: '操作',
+            dataIndex: 'operation',
+            key: 'operation',
+        },
+    ]
+
+    export default defineComponent({
+        components: {
+            defHttp,
+            Space,
+            Drawer,
+            Button,
+            Table,
+            PageWrapper,
+            FormItem,
+            Input,
+            Form,
+            Row,
+            Col,
+            Popconfirm,
+            Add${className}, ${className}Detail,
+        },
+        setup(props) {
+            const labelCol = {style: {width: '65px'}}
+            const wrapperCol = {span: 24}
+            const formRef = ref < FormInstance > ()
+
+
+            interface  FormState
+            {
+                #set($excludeFields = ["id","createTime", "updateTime", "creater", "updater"])
+                #foreach($field in $fields)
+                    #if(!$excludeFields.contains($field.attributeName))
+                            ${field.attributeName}:any
+                    #end
+                #end
+            }
+
+            const formState = reactive < FormState > ({
+                #foreach($field in $fields)
+                    #if(!$excludeFields.contains($field.attributeName))
+                            ${field.attributeName}:getSafeUndefined(),
+                    #end
+                #end
+            })
+
+            return {
+                formRef,
+                formState,
+                labelCol,
+                wrapperCol,
+            }
+        },
+
+        data() {
+            return {
+                columns: columns,
+                showAddDrawer: false,
+                showDetailDrawer: false,
+                tableSource: [],
+                addDrawerTitle: null, //新增抽屉标题
+                tempRecord: null,//行记录
+            }
+        },
+        created() {
+            this.searchList(null)
+        },
+        mounted() {
+        },
+        computed: {},
+        methods: {
+            // 打开详情
+            openDetail(record) {
+                this.showDetailDrawer = true
+                this.tempRecord = record
+            },
+            // 关闭详情
+            closeDetail() {
+                this.showDetailDrawer = false
+                this.tempRecord = null
+            },
+            // 查询table数据
+            async searchList(params) {
+                // 构建查询参数
+                const tempParams = {
+
+                }
+                keys(this.formState).forEach((key) => {
+                    if (this.formState[key]) {
+                        tempParams[key] = this.formState[key]
+                    }
+                })
+
+                let result = await jx3Http.get({
+                    url: UrlSetting.search${className}List},
+                    params: tempParams,
+                })
+                if (result && result['code'] === 200) {
+                    this.tableSource = result['data']
+                    message.success(result.message)
+                } else {
+                    message.error(result.message)
+                }
+            },
+            // 打开新增
+            openAdd() {
+                this.showAddDrawer = true
+                this.addDrawerTitle = '新增记录'
+                this.tempRecord = null
+            },
+            // 关闭新增
+            closeAdd(refresh ? : boolean)
+    {
+        this.showAddDrawer = false
+        this.tempRecord = null
+        this.addDrawerTitle = null
+        if (refresh) {
+            this.search(null)
+        }
+    }
+    ,
+    // 删除一行数据
+    async deleteRecord(record)
+    {
+        let result = await jx3Http.post({
+            url: UrlSetting.deleteById,
+            params: {id: record.id},
+        })
+        if (result && result['code'] === 200) {
+            message.success(result.message)
+            this.search(null)
+        } else {
+            message.error(result.message)
+        }
+    }
+    ,
+    //修改一行数据
+    async updateRecord(record)
+    {
+        this.showAddDrawer = true
+        this.addDrawerTitle = '修改记录'
+        this.tempRecord = record
+    }
+    ,
+    },
+    })
+</script>
+
+<style lang="less" scoped></style>
