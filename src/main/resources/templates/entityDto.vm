@@ -13,7 +13,7 @@ import $import;
  */
 
 @Data
-public class $className {
+public class ${className}Dto {
 
 #foreach($field in $fields)
     #if($field.columnComment && $field.columnComment != "")

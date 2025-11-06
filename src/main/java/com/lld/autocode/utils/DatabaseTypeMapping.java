@@ -1,12 +1,13 @@
 package com.lld.autocode.utils;
 
-import java.math.BigDecimal;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public enum DatabaseTypeMapping {
     // 数值类型
     bigint("bigint", "Long", "Long", "0"),
+    dbint("int", "Integer", "Integer", "0"),
     varchar("varchar", "String", "String","0"),
     datetime("datetime", "Date", "java.util.Date","1"),
     decimal("decimal", "BigDecimal", "java.math.BigDecimal","1"),
@@ -20,6 +21,7 @@ public enum DatabaseTypeMapping {
     private final String packageUrl;
     //0不需要导包 1 需要导包
     private final String needImport;
+
 
 
     DatabaseTypeMapping(String databaseType, String javaType, String packageUrl , String needImport) {

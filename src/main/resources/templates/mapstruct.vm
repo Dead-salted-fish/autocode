@@ -1,11 +1,9 @@
 
-
-
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface MS${className}Mapper} {
+public interface MS${className}Mapper {
 // 使用工厂方法获取对象实例
 MS${className}Mapper INSTANCE = Mappers.getMapper(MS${className}Mapper.class);
 

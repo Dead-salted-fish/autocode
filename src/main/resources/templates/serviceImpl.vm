@@ -21,27 +21,27 @@ public ${className}ServiceImpl(${className}Repository ${lowerCaseClassName}Repos
 * **/
 public ReturnResult list(${className}Dto ${lowerCaseClassName}Dto) {
 
-    return return ReturnResult.OK();
+    return  ReturnResult.OK();
 }
 /**
 *  新增
 * **/
 public ReturnResult add(${className}Dto ${lowerCaseClassName}Dto){
 
-    return return ReturnResult.OK();
+    return  ReturnResult.OK();
 }
 /**
 * 更新
 * **/
 public ReturnResult update(${className}Dto ${lowerCaseClassName}Dto){
 
-    return return ReturnResult.OK();
+    return  ReturnResult.OK();
 }
 /**
 * 删除
 * **/
 public ReturnResult delete(${className}Dto ${lowerCaseClassName}Dto){
 
-    return return ReturnResult.OK();
+    return ReturnResult.OK();
 }
 }

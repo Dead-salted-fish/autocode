@@ -7,6 +7,8 @@
 #macro(jdbcTypeHandler $dataType)
  #if($dataType == "DATETIME")
 jdbcType="TIMESTAMP" ##
+ #elseif($dataType == "INT")
+jdbcType="INTEGER"
  #else
 jdbcType="$dataType" ##
  #end

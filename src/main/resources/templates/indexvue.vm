@@ -13,12 +13,12 @@
                 <Col span="4" :offset="20" style="display: flex; justify-content: flex-end">
                 <Space>
                     <Button type="primary" v-on:click="openAdd">新增</Button>
-                    <Button type="primary" v-on:click="searchList">查询</Button>
+                    <Button type="primary" v-on:click="searchList"  :loading="searchLoading">查询</Button>
                 </Space>
                 </Col>
             </Row>
 
-            <Table :dataSource="tableSource" :columns="columns" :bordered="true" :pagination="false">
+            <Table :dataSource="tableSource" :columns="columns" :bordered="true" :pagination="false"  :loading="searchLoading">
                 <template #bodyCell="{ column, record,index }">
 
                     <template v-if="column.key === 'operation'">
@@ -132,7 +132,7 @@
             const labelCol = {style: {width: '65px'}}
             const wrapperCol = {span: 24}
             const formRef = ref < FormInstance > ()
-
+            let searchLoading = ref(false)
 
             interface  FormState
             {
@@ -157,6 +157,7 @@
                 formState,
                 labelCol,
                 wrapperCol,
+                searchLoading,
             }
         },
 
