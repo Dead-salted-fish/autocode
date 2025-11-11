@@ -190,6 +190,8 @@
             },
             // 查询table数据
             async searchList(params) {
+
+                try{
                 // 构建查询参数
                 const tempParams = {
 
@@ -210,6 +212,11 @@
                 } else {
                     message.error(result.message)
                 }
+            }catch (e) {
+                console.log(e)
+            } finally {
+                this.searchLoading = false
+            }
             },
             // 打开新增
             openAdd() {
