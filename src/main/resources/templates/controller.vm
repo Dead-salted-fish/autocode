@@ -1,3 +1,11 @@
+#if(${basePath})
+package ${basePath}.controller;
+
+import ${basePath}.service.${className}Service;
+import ${basePath}.entity.dto.${className}Dto;
+import com.lld.saltedfishutils.web.result.ReturnResult;
+import org.springframework.web.bind.annotation.*;
+#end
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;

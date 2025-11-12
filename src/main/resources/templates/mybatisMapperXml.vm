@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="">
+<mapper namespace="${basePath}.mapper.${className}Mapper">
 ## ##用来取消换行
 #macro(jdbcTypeHandler $dataType)
  #if($dataType == "DATETIME")
@@ -15,7 +15,7 @@ jdbcType="$dataType" ##
  #end
 
 
-    <resultMap id="BaseResultMap" type="">
+    <resultMap id="BaseResultMap" type="${basePath}.entity.${className}">
         #foreach($field in $fields)
             #if($field.attributeName && $field.attributeName == "id")
                 <id property="id" column="id" jdbcType="BIGINT"/>
@@ -37,6 +37,12 @@ jdbcType="$dataType" ##
         #end
     </sql>
 
+    #if(  $serverMethods.contains("add") )
+        <insert id="add" parameterType="${basePath}.entity.${className}">
+            insert into ${tableName}(#foreach ($field in $fields) ${field.columnName}#if($foreach.hasNext),#end#end)
+            values (#foreach ($field in $fields) #{${field.attributeName}}#if($foreach.hasNext),#end #end)
+        </insert>
+    #end
 
 
 

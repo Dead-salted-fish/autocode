@@ -1,3 +1,11 @@
+#if(${basePath})
+package ${basePath}.repository;
+
+import ${basePath}.mapper.${className}Mapper;
+import ${basePath}.entity.${className};
+import ${basePath}.entity.dto.${className}Dto;
+#end
+
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;

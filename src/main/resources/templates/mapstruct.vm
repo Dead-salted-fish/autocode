@@ -1,3 +1,6 @@
+#if(${basePath})
+package ${basePath}.mapstruct;
+#end
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

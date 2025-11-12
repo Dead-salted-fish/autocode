@@ -1,3 +1,9 @@
+#if(${basePath})
+package ${basePath}.entity;
+#end
+
+import lombok.Data;
+import com.baomidou.mybatisplus.annotation.TableName;
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;

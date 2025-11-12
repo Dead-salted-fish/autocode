@@ -105,8 +105,13 @@ public class AutoCodeServiceImpl implements AutoCodeService {
      * 获取web端代码
      **/
     private void generateWebTemplate(GenerateCodeDto generateCodeDto) {
+        List<String> webGenerateOptions = generateCodeDto.getWebGenerateOptions();
         for (WebGenerate webGenerate : webGenerates) {
-            Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto, webGenerate.getGenerateType());
+            String generateType = webGenerate.getGenerateType();
+            if(!webGenerateOptions.contains(generateType)){
+                continue;
+            }
+            Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto,generateType );
             webGenerate.doGenerate(stringObjectMap);
         }
     }
@@ -114,9 +119,13 @@ public class AutoCodeServiceImpl implements AutoCodeService {
      * 生成服务端代码
      **/
     private void generateServerTemplate(GenerateCodeDto generateCodeDto) {
-
+        List<String> serverGenerateOptions = generateCodeDto.getServerGenerateOptions();
         for (ServerGenerate serverGenerate : serverGenerates) {
-            Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto, serverGenerate.getGenerateType());
+            String generateType = serverGenerate.getGenerateType();
+            if (!serverGenerateOptions.contains(generateType)) {
+                continue;
+            }
+            Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto, generateType);
             serverGenerate.doGenerate(stringObjectMap);
         }
     }
@@ -131,25 +140,14 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         String className = generateCamelCaseName(tableName, true);
         //首字母小写的类名
         String lowerCaseClassName = generateCamelCaseName(tableName, false);
-        //导包的内容,默认导入 lombok与mybatisplus的TableName
+        //额外导包的内容
         Set<String> importPackageList = new HashSet<>();
         Boolean attributePacKageImport = false;
         if ("Entity".toLowerCase().equals(lowerCaseType) ||
                 "Dto".toLowerCase().equals(lowerCaseType) ||
                 "Vo".toLowerCase().equals(lowerCaseType)) {
-            importPackageList.add("lombok.Data");
-            if ("Entity".toLowerCase().equals(lowerCaseType)) {
-                importPackageList.add("com.baomidou.mybatisplus.annotation.TableName");
-            }
             attributePacKageImport = true;
-        }else if("Controller".toLowerCase().equals(lowerCaseType)){
-            importPackageList.add("com.lld.saltedfishutils.web.result.ReturnResult");
-            importPackageList.add("org.springframework.web.bind.annotation.*");
-        }else if("Service".toLowerCase().equals(lowerCaseType)||"ServiceImpl".toLowerCase().equals(lowerCaseType)){
-            importPackageList.add("com.lld.saltedfishutils.web.result.ReturnResult");
         }
-
-
         //属性内容
         List<Map<String, String>> fields = new ArrayList<>();
 
@@ -178,7 +176,8 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         model.put("lowerCaseClassName", lowerCaseClassName);
         model.put("imports", importPackageList);
         model.put("fields", fields);
-
+        model.put("serverMethods", generateCodeDto.getServerMethodsGenerateOptions());
+        model.put("basePath", generateCodeDto.getBasePath());
         return model;
     }
 

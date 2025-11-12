@@ -1,3 +1,13 @@
+#if(${basePath})
+package ${basePath}.service.impl;
+
+import ${basePath}.entity.dto.${className}Dto;
+import ${basePath}.entity.Vo.${className}Vo;
+import ${basePath}.entity.${className};
+import ${basePath}.repository.${className}Repository;
+#end
+
+import com.lld.saltedfishutils.web.result.ReturnResult;
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
     import $import;
@@ -8,40 +18,39 @@ import org.springframework.stereotype.Service;
 @Service
 public class ${className}ServiceImpl implements ${className}Service {
 
-private ${className}Repository ${lowerCaseClassName}Repository;
+    private ${className}Repository ${lowerCaseClassName}Repository;
 
-public ${className}ServiceImpl(${className}Repository ${lowerCaseClassName}Repository) {
-    this.${lowerCaseClassName}Repository = ${lowerCaseClassName}Repository;
+    public ${className}ServiceImpl(${className}Repository ${lowerCaseClassName}Repository) {
+        this.${lowerCaseClassName}Repository = ${lowerCaseClassName}Repository;
 
+        }
+
+    /**
+    *  获取list
+    * **/
+    public ReturnResult list(${className}Dto ${lowerCaseClassName}Dto) {
+
+        return  ReturnResult.OK();
     }
+    /**
+    *  新增
+    * **/
+    public ReturnResult add(${className}Dto ${lowerCaseClassName}Dto){
 
+        return  ReturnResult.OK();
+    }
+    /**
+    * 更新
+    * **/
+    public ReturnResult update(${className}Dto ${lowerCaseClassName}Dto){
 
-/**
-*  获取list
-* **/
-public ReturnResult list(${className}Dto ${lowerCaseClassName}Dto) {
+        return  ReturnResult.OK();
+    }
+    /**
+    * 删除
+    * **/
+    public ReturnResult delete(${className}Dto ${lowerCaseClassName}Dto){
 
-    return  ReturnResult.OK();
-}
-/**
-*  新增
-* **/
-public ReturnResult add(${className}Dto ${lowerCaseClassName}Dto){
-
-    return  ReturnResult.OK();
-}
-/**
-* 更新
-* **/
-public ReturnResult update(${className}Dto ${lowerCaseClassName}Dto){
-
-    return  ReturnResult.OK();
-}
-/**
-* 删除
-* **/
-public ReturnResult delete(${className}Dto ${lowerCaseClassName}Dto){
-
-    return ReturnResult.OK();
-}
+        return ReturnResult.OK();
+    }
 }

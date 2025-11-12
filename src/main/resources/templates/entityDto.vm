@@ -1,3 +1,7 @@
+#if(${basePath})
+package ${basePath}.entity.dto;
+#end
+
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;

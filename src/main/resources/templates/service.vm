@@ -1,3 +1,10 @@
+#if(${basePath})
+package ${basePath}.service;
+
+import ${basePath}.entity.dto.${className}Dto;
+#end
+
+import com.lld.saltedfishutils.web.result.ReturnResult;
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;
