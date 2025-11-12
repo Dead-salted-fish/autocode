@@ -188,30 +188,36 @@
                 this.showDetailDrawer = false
                 this.tempRecord = null
             },
-            // 查询table数据
-            async searchList(params) {
-
-                try{
-                // 构建查询参数
-                const tempParams = {
-
-                }
+            // 处理表单数据
+            processFormValues(tempParams) {
                 keys(this.formState).forEach((key) => {
                     if (this.formState[key]) {
                         tempParams[key] = this.formState[key]
                     }
                 })
+            },
+            // 查询table数据
+            async searchList(params) {
+
+                try{
+                this.searchLoading = true
+                // 构建查询参数
+                const tempParams = {
+
+                }
+                this.processFormValues(tempParams)
 
                 let result = await jx3Http.get({
                     url: UrlSetting.search${className}List},
                     params: tempParams,
                 })
-                if (result && result['code'] === 200) {
-                    this.tableSource = result['data']
-                    message.success(result.message)
-                } else {
+                if (!result && result['code'] !== 200) {
                     message.error(result.message)
+                    return
                 }
+                this.tableSource = result['data']
+                message.success(result.message)
+
             }catch (e) {
                 console.log(e)
             } finally {

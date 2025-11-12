@@ -6,21 +6,23 @@
                 #foreach($field in $fields)
                     #if(!$excludeFields.contains($field.attributeName))
                         <Col span="24">
-                        <FormItem label="#if(${field.columnComment}) ${field.columnComment} #end" name="${field.attributeName}">
-                            <Input v-model:value="formState.${field.attributeName}" />
+                        <FormItem label="#if(${field.columnComment}) ${field.columnComment} #end"
+                                  name="${field.attributeName}">
+                            <Input v-model:value="formState.${field.attributeName}"/>
                         </FormItem>
                         </Col>
 
-                   #end
+                    #end
                 #end
             </Row>
 
 
             <Col span="24">
             <FormItem :wrapper-col="{ span: 14, offset: 8 }">
-                <Button type="primary" v-on:click="submit">确定</Button>
+                <Button type="primary" v-on:click="submit" :loading="submitButLoading">确定</Button>
                 <Button type="primary" style="margin-left: 40px" v-on:click="(e) => onClose()"
-                >取消</Button
+                >取消
+                </Button
                 >
             </FormItem>
             </Col>
@@ -46,17 +48,18 @@
         Select,
         Textarea,
     } from 'ant-design-vue'
-    import { jx3Http } from '/@/utils/http/axios'
-    import type { FormInstance } from 'ant-design-vue'
-    import { defineComponent, reactive, ref } from 'vue'
+    import {jx3Http} from '/@/utils/http/axios'
+    import type {FormInstance} from 'ant-design-vue'
+    import {defineComponent, reactive, ref} from 'vue'
     import UrlSetting from './UrlSetting'
-    import { keys } from 'xe-utils'
-    import { myutils } from '/@/utils/myutils/myutils'
-    const getSafeUndefined = myutils.getSafeUndefined
-    const labelCol = { style: { width: '80px' } }
-    const wrapperCol = { span: 16 }
+    import {keys} from 'xe-utils'
+    import {myutils} from '/@/utils/myutils/myutils'
 
-    const formRef = ref<FormInstance>()
+    const getSafeUndefined = myutils.getSafeUndefined
+    const labelCol = {style: {width: '80px'}}
+    const wrapperCol = {span: 16}
+
+    const formRef = ref < FormInstance > ()
 
     export default defineComponent({
         components: {
@@ -84,20 +87,21 @@
             initData: Object,
         },
         setup(props) {
-            interface  FormState
+            interface
+            FormState
             {
 
-        #foreach($field in $fields)
-            #if(!$excludeFields.contains($field.attributeName))
-                ${field.attributeName}:any
-            #end
-        #end
+                #foreach($field in $fields)
+                    #if(!$excludeFields.contains($field.attributeName))
+                            ${field.attributeName}:any
+                    #end
+                #end
             }
 
             const formState = reactive < FormState > ({
                 #foreach($field in $fields)
                     #if(!$excludeFields.contains($field.attributeName))
-                            ${field.attributeName}:getSafeUndefined(),
+                            ${field.attributeName}: getSafeUndefined(),
                     #end
                 #end
             })
@@ -112,11 +116,11 @@
 
         data() {
             return {
-
+                submitButLoading: false,
             }
         },
         created() {
-           this.initFormStateData()
+            this.initFormStateData()
         },
 
         methods: {
@@ -125,7 +129,7 @@
                 if (this.initData) {
                     let result = await jx3Http.get({
                         url: UrlSetting.getDataById,
-                        params: { id: this.initData.id },
+                        params: {id: this.initData.id},
                     })
                     if (result && result['code'] === 200) {
                         const resultData = result.data
@@ -137,31 +141,44 @@
                     }
                 }
             },
+            // 处理表单数据
+            processFormValues(value) {
+
+                if (this.initData) {
+                    value.id = this.initData.id
+                }
+            },
+
 
             // 提交表单
-            submit() {
-                this.formRef
-                        ?.validateFields()
-                        .then(async (value: any) => {
-                            console.log('value', value)
+            async submit() {
+                try {
+                    this.submitButLoading = true
+                    const value = await this.formRef?.validateFields()
+                    if (!value) {
+                        return
+                    }
+                    this.processFormValues(value)
 
-                            let urlStr = UrlSetting.add${className}
-                            if (this.initData) {
-                                value.id = this.initData.id
-                                urlStr = UrlSetting.udpate${className}
-                            }
+                    console.log('value', value)
 
-                            let result = await jx3Http.post({ url: urlStr, params: value })
-                            if (result && result['code'] === 200) {
-                                message.success(result.message)
-                                this.onClose && this.onClose(true)
-                            } else {
-                                message.error(result.message)
-                            }
-                        })
-                        .catch((err: any) => {
-                            console.log('表单验证失败', err)
-                        })
+                    let urlStr = this.initData
+                            ? UrlSetting.udpateGoldCoinRecord
+                            : UrlSetting.addGoldCoinRecord
+
+                    let result = await jx3Http.post({url: urlStr, params: value})
+                    if (!result && result['code'] !== 200) {
+                        message.error(result.message)
+                        return
+                    }
+                    message.success(result.message)
+                    this.onClose && this.onClose(true)
+                } catch (e) {
+                    console.log(e)
+                } finally {
+                    this.submitButLoading = false
+                }
+
             },
         },
     })
