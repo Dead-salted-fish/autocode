@@ -87,8 +87,8 @@
             initData: Object,
         },
         setup(props) {
-            interface
-            FormState
+
+            interface  FormState
             {
 
                 #foreach($field in $fields)
