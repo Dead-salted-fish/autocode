@@ -27,5 +27,5 @@ ReturnResult update(${className}Dto ${lowerCaseClassName}Dto);
 /**
 * 删除
 * **/
-ReturnResult delete(${className}Dto ${lowerCaseClassName}Dto);
+ReturnResult deleteById(${className}Dto ${lowerCaseClassName}Dto);
 }

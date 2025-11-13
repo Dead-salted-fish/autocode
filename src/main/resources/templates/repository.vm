@@ -22,5 +22,28 @@ public class ${className}Repository {
         this.${lowerCaseClassName}Mapper = ${lowerCaseClassName}Mapper;
     }
 
+#if(  $serverMethods.contains("list") )
+    public List<${className}> getList(${className} ${lowerCaseClassName}) {
+        return  ${lowerCaseClassName}Mapper.getList(${lowerCaseClassName});
+    }
+#end
+
+#if(  $serverMethods.contains("add") )
+    public void add(${className} ${lowerCaseClassName}) {
+    ${lowerCaseClassName}Mapper.add(${lowerCaseClassName});
+    }
+    #end
+
+#if(  $serverMethods.contains("deleteById") )
+    public void deleteById(Long id, Long userId) {
+    ${lowerCaseClassName}Mapper.safeDeleteById(id,userId);
+    }
+#end
+
+#if(  $serverMethods.contains("update") )
+    public void safeUpdate(${className} ${lowerCaseClassName}, Long userId) {
+    ${lowerCaseClassName}Mapper.safeUpdate(${lowerCaseClassName},userId);
+    }
+#end
 
 }

@@ -108,9 +108,13 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         List<String> webGenerateOptions = generateCodeDto.getWebGenerateOptions();
         for (WebGenerate webGenerate : webGenerates) {
             String generateType = webGenerate.getGenerateType();
-            if(!webGenerateOptions.contains(generateType)){
+            // 忽略大小写比较
+            boolean shouldGenerate = webGenerateOptions.stream()
+                    .anyMatch(option -> option.equalsIgnoreCase(generateType));
+            if (!shouldGenerate) {
                 continue;
             }
+
             Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto,generateType );
             webGenerate.doGenerate(stringObjectMap);
         }
@@ -122,9 +126,13 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         List<String> serverGenerateOptions = generateCodeDto.getServerGenerateOptions();
         for (ServerGenerate serverGenerate : serverGenerates) {
             String generateType = serverGenerate.getGenerateType();
-            if (!serverGenerateOptions.contains(generateType)) {
+            // 忽略大小写比较
+            boolean shouldGenerate = serverGenerateOptions.stream()
+                    .anyMatch(option -> option.equalsIgnoreCase(generateType));
+            if (!shouldGenerate) {
                 continue;
             }
+
             Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto, generateType);
             serverGenerate.doGenerate(stringObjectMap);
         }
@@ -190,7 +198,11 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         }
     }
 
-    //驼峰命名
+    /**
+     * 驼峰命名
+     * @param originalName 原始名称
+     * @param capitalizeFirst 是否首字母大写
+     */
     private String generateCamelCaseName(String originalName, boolean capitalizeFirst) {
         if (originalName == null || originalName.isEmpty()) {
             return "";

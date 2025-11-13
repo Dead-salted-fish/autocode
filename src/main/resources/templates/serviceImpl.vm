@@ -1,5 +1,5 @@
 #if(${basePath})
-package ${basePath}.service.impl;
+package ${basePath}.service.Impl;
 
 import ${basePath}.entity.dto.${className}Dto;
 import ${basePath}.entity.Vo.${className}Vo;
@@ -29,28 +29,67 @@ public class ${className}ServiceImpl implements ${className}Service {
     *  获取list
     * **/
     public ReturnResult list(${className}Dto ${lowerCaseClassName}Dto) {
+    #if(  $serverMethods.contains("list") )
+        Long userId = CurrentUserHolder.getUserId();
+        ${className} ${lowerCaseClassName} =  ms${className}Mapper.dtoToEntity(${lowerCaseClassName}Dto);
+        ${lowerCaseClassName}.setCreater(userId);
 
+        List<${className}> ${lowerCaseClassName}s = ${lowerCaseClassName}Repository.getList(${lowerCaseClassName});
+        List<${className}Vo> voList = ms${className}Mapper.entityListToVoList(${lowerCaseClassName}s);
+        suppluFields(voList)
+
+    #end
         return  ReturnResult.OK();
     }
+        /**
+        *补充字段
+        * **/
+        private void suppluFields(List<${className}Vo> list) throws Exception {
+
+   }
+
+
     /**
     *  新增
     * **/
     public ReturnResult add(${className}Dto ${lowerCaseClassName}Dto){
-
+    #if(  $serverMethods.contains("add") )
+        ${className} ${lowerCaseClassName} = ms${className}Mapper.dtoToEntity(${lowerCaseClassName}Dto);
+        Long userId = CurrentUserHolder.getUserId();
+        ${lowerCaseClassName}.setCreater(userId);
+        ${lowerCaseClassName}.setUpdater(userId);
+        Date date = new Date();
+        ${lowerCaseClassName}.setCreateTime(date);
+        ${lowerCaseClassName}.setUpdateTime(date);
+        ${lowerCaseClassName}Repository.add(${lowerCaseClassName});
+        #end
         return  ReturnResult.OK();
     }
     /**
     * 更新
     * **/
     public ReturnResult update(${className}Dto ${lowerCaseClassName}Dto){
+    #if(  $serverMethods.contains("update") )
+        Long userId = CurrentUserHolder.getUserId();
+        Date date = new Date();
 
+        ${className} ${lowerCaseClassName} = ms${className}Mapper.dtoToEntity(dto);
+        ${lowerCaseClassName}.setUpdater(CurrentUserHolder.getUserId());
+        ${lowerCaseClassName}.setUpdateTime(date);
+
+        ${lowerCaseClassName}Repository.safeUpdate(${lowerCaseClassName}, userId);
+      #end
         return  ReturnResult.OK();
     }
     /**
     * 删除
     * **/
-    public ReturnResult delete(${className}Dto ${lowerCaseClassName}Dto){
+    public ReturnResult deleteById(${className}Dto ${lowerCaseClassName}Dto){
 
+    #if(  $serverMethods.contains("deleteById") )
+        Long userId = CurrentUserHolder.getUserId();
+        ${lowerCaseClassName}Repository.safeDeleteById(${lowerCaseClassName}Dto.getId(), userId);
+    #end
         return ReturnResult.OK();
     }
 }

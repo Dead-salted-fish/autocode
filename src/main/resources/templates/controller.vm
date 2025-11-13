@@ -37,9 +37,9 @@ public class ${className}Controller {
         return ${lowerCaseClassName}Service.update(${lowerCaseClassName}Dto);
     }
 
-    @PostMapping("/delete")
-    public ReturnResult delete(@RequestBody ${className}Dto ${lowerCaseClassName}Dto) {
-        return ${lowerCaseClassName}Service.delete(${lowerCaseClassName}Dto);
+    @PostMapping("/deleteById")
+    public ReturnResult deleteById(@RequestBody ${className}Dto ${lowerCaseClassName}Dto) {
+        return ${lowerCaseClassName}Service.deleteById(${lowerCaseClassName}Dto);
     }
 
 }

@@ -36,6 +36,18 @@ jdbcType="$dataType" ##
 
         #end
     </sql>
+    #if(  $serverMethods.contains("list") )
+        <select id="getList" resultType="BaseResultMap">
+            select
+            <include refid="Base_Column_List"/>
+            from ${tableName}
+            <where>
+                <if test="${className}.creater != null">
+                    and creater = #{${className}.creater}
+                </if>
+            </where>
+        </select>
+    #end
 
     #if(  $serverMethods.contains("add") )
         <insert id="add" parameterType="${basePath}.entity.${className}">
@@ -44,8 +56,27 @@ jdbcType="$dataType" ##
         </insert>
     #end
 
+    #if(  $serverMethods.contains("deleteById") )
+        <delete id="safeDeleteById">
+            delete
+            from ${tableName}
+            where id = #{id}
+            AND creater = #{userId}
+        </delete>
+    #end
 
-
+    #if(  $serverMethods.contains("update") )
+        <update id="safeUpdate">
+            update ${tableName} set
+            #foreach($field in $fields)
+                #if($field.attributeName && ($field.attributeName != "id" && $field.attributeName != "creater" && $field.attributeName != "update_time"))
+                    ${field.columnName} = #{${field.attributeName}}#if($foreach.hasNext),#end
+                #end
+            #end
+            where id = #{${lowerCaseClassName}Record.id}
+            AND creater = #{userId}
+        </update>
+    #end
 
 
 </mapper>

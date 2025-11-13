@@ -10,5 +10,19 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 @Mapper
 public interface ${className}Mapper  extends BaseMapper<${className}> {
+#if(  $serverMethods.contains("list") )
+    List<${className}> searchList(@Param("${className}") ${className} ${lowerCaseClassName});
+    #end
 
+#if(  $serverMethods.contains("add") )
+    int add(${className} ${lowerCaseClassName});
+#end
+
+#if(  $serverMethods.contains("deleteById") )
+    int safeDeleteById(@Param("id") Long id,@Param("userId") Long userId);
+#end
+
+#if(  $serverMethods.contains("update") )
+    int safeUpdate(@Param("${className}")${className} ${lowerCaseClassName}, @Param("userId")Long userId);
+ #end
 }
