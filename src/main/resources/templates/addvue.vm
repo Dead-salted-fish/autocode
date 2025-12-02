@@ -63,7 +63,6 @@
 
     export default defineComponent({
         components: {
-            defHttp,
             message,
             Select,
             Input,
@@ -163,8 +162,8 @@
                     console.log('value', value)
 
                     let urlStr = this.initData
-                            ? UrlSetting.udpateGoldCoinRecord
-                            : UrlSetting.addGoldCoinRecord
+                            ? UrlSetting.update${className}
+                            : UrlSetting.add${className}
 
                     let result = await jx3Http.post({url: urlStr, params: value})
                     if (!result && result['code'] !== 200) {

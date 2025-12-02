@@ -17,4 +17,6 @@ public class GenerateCodeDto {
     private List<String> serverMethodsGenerateOptions;
     //基础路径
     private String basePath;
+    //包路径
+    private List< String> packagePaths;
 }

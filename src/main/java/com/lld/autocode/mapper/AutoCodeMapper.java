@@ -16,4 +16,6 @@ public interface AutoCodeMapper  extends BaseMapper<TableInfo> {
     Page<TableInfo> getAlltables(Page<TableInfo> page,@Param("tableInfoDto") TableInfoDto tableInfoDto);
 
     List<TableMetaData> getTableMetaDate(@Param("tableName") String tableName);
+
+    String getTableComment(@Param("tableName") String tableName);
 }

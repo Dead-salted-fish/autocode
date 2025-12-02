@@ -1,17 +1,34 @@
-#if(${basePath})
-package ${basePath}.repository;
+##自身所在的包
+#set($packagePath = $packagePaths.get($type))
+##entity包
+#set($entityPath = $packagePaths.get("entity"))
+##dto包
+#set($dtoPath = $packagePaths.get("dto"))
+##mapper包
+#set($mapperPath = $packagePaths.get("mybatismapper"))
 
-import ${basePath}.mapper.${className}Mapper;
-import ${basePath}.entity.${className};
-import ${basePath}.entity.dto.${className}Dto;
+#if($packagePath)
+package ${packagePath}
 #end
+
+##默认引用
+#if($mapperPath)
+import $mapperPath.${className}Mapper;
+#end
+#if($entityPath)
+import $entityPath.${className};
+#end
+#if($dtoPath)
+import $dtoPath.${className}Dto;
+#end
+import org.springframework.stereotype.Component;
 
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;
     #end
 #end
-import org.springframework.stereotype.Component;
+
 
 @Component
 public class ${className}Repository {
@@ -35,14 +52,14 @@ public class ${className}Repository {
     #end
 
 #if(  $serverMethods.contains("deleteById") )
-    public void deleteById(Long id, Long userId) {
-    ${lowerCaseClassName}Mapper.safeDeleteById(id,userId);
+    public void safeDeleteById(${className} ${lowerCaseClassName}) {
+    ${lowerCaseClassName}Mapper.safeDeleteById(${lowerCaseClassName});
     }
 #end
 
 #if(  $serverMethods.contains("update") )
-    public void safeUpdate(${className} ${lowerCaseClassName}, Long userId) {
-    ${lowerCaseClassName}Mapper.safeUpdate(${lowerCaseClassName},userId);
+    public void safeUpdate(${className} ${lowerCaseClassName}) {
+    ${lowerCaseClassName}Mapper.safeUpdate(${lowerCaseClassName});
     }
 #end
 

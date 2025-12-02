@@ -1,7 +1,26 @@
-#if(${basePath})
-package ${basePath}.mapstruct;
+##自身所在的包
+#set($packagePath = $packagePaths.get($type))
+##entity包
+#set($entityPath = $packagePaths.get("entity"))
+##dto包
+#set($dtoPath = $packagePaths.get("dto"))
+##vo包
+#set($voPath = $packagePaths.get("vo"))
+
+#if($packagePath)
+package ${packagePath}
 #end
 
+##默认导入
+#if($voPath)
+import ${voPath}.${className}Vo;
+#end
+#if($dtoPath)
+import ${dtoPath}.${className}DTO;
+#end
+#if($entityPath)
+import ${entityPath}.${className};
+#end
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -10,6 +29,10 @@ public interface MS${className}Mapper {
 // 使用工厂方法获取对象实例
 MS${className}Mapper INSTANCE = Mappers.getMapper(MS${className}Mapper.class);
 
+    ${className}Vo entityToVo(${className} entity);
 
+    List <${className}Vo> entityListToVoList(List<${className}> entityList);
+
+    ${className}  dtoToEntity (${className}DTO ${lowerCaseClassName}DTO);
 
 }

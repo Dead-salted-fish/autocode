@@ -1,24 +1,63 @@
-#if(${basePath})
-package ${basePath}.service.Impl;
+##自身所在的包
+#set($packagePath = $packagePaths.get($type))
+##entity包
+#set($entityPath = $packagePaths.get("entity"))
+##dto包
+#set($dtoPath = $packagePaths.get("dto"))
+##vo包
+#set($voPath = $packagePaths.get("vo"))
+##service
+#set($servicePath = $packagePaths.get("service"))
+##repository包
+#set($repositoryPath = $packagePaths.get("repository"))
+##mapstruct包
+#set($mapstructPath = $packagePaths.get("mapstruct"))
 
-import ${basePath}.entity.dto.${className}Dto;
-import ${basePath}.entity.Vo.${className}Vo;
-import ${basePath}.entity.${className};
-import ${basePath}.repository.${className}Repository;
+#if($packagePath)
+package ${packagePath}
+#end
+
+#if($dtoPath)
+import ${dtoPath}.${className}Dto;
+#end
+#if($voPath)
+import ${voPath}.${className}Vo;
+#end
+#if($entityPath)
+import ${entityPath}.${className};
+#end
+#if($repositoryPath)
+import ${repositoryPath}.${className}Repository;
+#end
+#if($servicePath)
+import ${servicePath}.${className}Service;
+#end
+#if($mapstructPath)
+import ${mapstructPath}.MS${className}Mapper;
+#end
+#if(  $serverMethods.contains("list") )
+import java.util.List;
+#end
+#if(  $serverMethods.contains("add") ||  $serverMethods.contains("update") )
+import java.util.Date;
 #end
 
 import com.lld.saltedfishutils.web.result.ReturnResult;
+import org.springframework.stereotype.Service;
+
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
     import $import;
     #end
 #end
-import org.springframework.stereotype.Service;
+
 
 @Service
 public class ${className}ServiceImpl implements ${className}Service {
 
     private ${className}Repository ${lowerCaseClassName}Repository;
+
+   private MS${className}Mapper ms${className}Mapper = MS${className}Mapper.INSTANCE;
 
     public ${className}ServiceImpl(${className}Repository ${lowerCaseClassName}Repository) {
         this.${lowerCaseClassName}Repository = ${lowerCaseClassName}Repository;
@@ -36,7 +75,7 @@ public class ${className}ServiceImpl implements ${className}Service {
 
         List<${className}> ${lowerCaseClassName}s = ${lowerCaseClassName}Repository.getList(${lowerCaseClassName});
         List<${className}Vo> voList = ms${className}Mapper.entityListToVoList(${lowerCaseClassName}s);
-        suppluFields(voList)
+        suppluFields(voList);
 
     #end
         return  ReturnResult.OK();
@@ -44,7 +83,7 @@ public class ${className}ServiceImpl implements ${className}Service {
         /**
         *补充字段
         * **/
-        private void suppluFields(List<${className}Vo> list) throws Exception {
+        private void suppluFields(List<${className}Vo> list)  {
 
    }
 
@@ -73,7 +112,7 @@ public class ${className}ServiceImpl implements ${className}Service {
         Long userId = CurrentUserHolder.getUserId();
         Date date = new Date();
 
-        ${className} ${lowerCaseClassName} = ms${className}Mapper.dtoToEntity(dto);
+        ${className} ${lowerCaseClassName} = ms${className}Mapper.dtoToEntity(${lowerCaseClassName}Dto);
         ${lowerCaseClassName}.setUpdater(CurrentUserHolder.getUserId());
         ${lowerCaseClassName}.setUpdateTime(date);
 

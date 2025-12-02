@@ -1,10 +1,29 @@
-#if(${basePath})
-package ${basePath}.service;
+##自身所在的包
+#set($packagePath = $packagePaths.get($type))
+##dto包
+#set($dtoPath = $packagePaths.get("dto"))
+##service
+#set($servicePath = $packagePaths.get("service"))
+##mapstruct包
+#set($mapstructPath = $packagePaths.get("mapstruct"))
 
-import ${basePath}.entity.dto.${className}Dto;
+#if($packagePath)
+package ${packagePath}
 #end
 
+##默认引入
+#if($dtoPath)
+import ${dtoPath}.${className}Dto;
+#end
+#if($servicePath)
+import ${servicePath}.${className}Service;
+#end
+#if($mapstructPath)
+import ${mapstructPath}.MS${className}Mapper;
+#end
 import com.lld.saltedfishutils.web.result.ReturnResult;
+
+
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;
@@ -12,20 +31,20 @@ import $import;
 #end
 
 public interface ${className}Service {
-/**
-*  获取list
-* **/
-ReturnResult list(${className}Dto ${lowerCaseClassName}Dto);
-/**
-*  新增
-* **/
-ReturnResult add(${className}Dto ${lowerCaseClassName}Dto);
-/**
-* 更新
-* **/
-ReturnResult update(${className}Dto ${lowerCaseClassName}Dto);
-/**
-* 删除
-* **/
-ReturnResult deleteById(${className}Dto ${lowerCaseClassName}Dto);
+    /**
+    *  获取list
+    * **/
+    ReturnResult list(${className}Dto ${lowerCaseClassName}Dto);
+    /**
+    *  新增
+    * **/
+    ReturnResult add(${className}Dto ${lowerCaseClassName}Dto);
+    /**
+    * 更新
+    * **/
+    ReturnResult update(${className}Dto ${lowerCaseClassName}Dto);
+    /**
+    * 删除
+    * **/
+    ReturnResult deleteById(${className}Dto ${lowerCaseClassName}Dto);
 }

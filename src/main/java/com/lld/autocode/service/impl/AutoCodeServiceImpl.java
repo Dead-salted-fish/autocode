@@ -75,7 +75,7 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         String tableName = tableInfoDto.getTableName();
         List<TableMetaData> list = autoCodeRepository.getTableMetaDate(tableName);
         List<TableMetaDataDto> tableMetaDataDtos = msAutoCodeMapper.TableMetaDataListToTableMetaDataDtoList(list);
-        SupplyField(tableMetaDataDtos);
+        SupplyField(tableMetaDataDtos,tableName);
         return ReturnResult.OK(tableMetaDataDtos);
     }
 
@@ -142,22 +142,27 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         // 准备模板数据
         Map<String, Object> model = new HashMap<>();
         String lowerCaseType = type.toLowerCase();
+
         //表名
         String tableName = generateCodeDto.getTableName();
+        //表备注
+        String tableComment = autoCodeRepository.getTableComment(tableName);
         //类名
         String className = generateCamelCaseName(tableName, true);
         //首字母小写的类名
         String lowerCaseClassName = generateCamelCaseName(tableName, false);
-        //额外导包的内容
+        //导包
         Set<String> importPackageList = new HashSet<>();
+        //属性内容
+        List<Map<String, String>> fields = new ArrayList<>();
+
+        //当type是entity,dto，vo时，判断属性包导入
         Boolean attributePacKageImport = false;
         if ("Entity".toLowerCase().equals(lowerCaseType) ||
                 "Dto".toLowerCase().equals(lowerCaseType) ||
                 "Vo".toLowerCase().equals(lowerCaseType)) {
             attributePacKageImport = true;
         }
-        //属性内容
-        List<Map<String, String>> fields = new ArrayList<>();
 
         //填入属性内容
         List<TableMetaDataDto> tableMetaDatas = generateCodeDto.getTableMetaDatas();
@@ -167,7 +172,6 @@ public class AutoCodeServiceImpl implements AutoCodeService {
                     importPackageList.add(tableMetaDataDto.getPackageUrl());
                 }
             }
-
             // 处理字段信息
             Map<String, String> fieldInfo = new HashMap<>();
             fieldInfo.put("javaType", tableMetaDataDto.getJavaType());
@@ -177,8 +181,16 @@ public class AutoCodeServiceImpl implements AutoCodeService {
             fieldInfo.put("columnComment", tableMetaDataDto.getColumnComment());
             fields.add(fieldInfo);
         }
+        //拆解各类型的包路径，前端传来的格式为 type-packagePath
+        List<String> packagePaths = generateCodeDto.getPackagePaths();
+        Map<String, String> packagePathMap = new HashMap<>();
+        for (String packagePath : packagePaths) {
+            String[] split = packagePath.split("-");
+            packagePathMap.put( split[0].toLowerCase(), split[1]);
+        }
 
         //模板数据
+        model.put("type", lowerCaseType);
         model.put("tableName", tableName);
         model.put("className", className);
         model.put("lowerCaseClassName", lowerCaseClassName);
@@ -186,15 +198,20 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         model.put("fields", fields);
         model.put("serverMethods", generateCodeDto.getServerMethodsGenerateOptions());
         model.put("basePath", generateCodeDto.getBasePath());
+        model.put("packagePaths", packagePathMap);
+        model.put("tableComment", tableComment!=null&&tableComment.length()>0?tableComment:null);
         return model;
     }
 
-    private void SupplyField(List<TableMetaDataDto> list) {
+
+    private void SupplyField(List<TableMetaDataDto> list, String tableName) {
+        String tableComment =  autoCodeRepository.getTableComment(tableName);
         for (TableMetaDataDto tableMetaDataDto : list) {
             Map<String, String> map = DatabaseTypeMapping.getJavaTypeAndPackageUrlByDatabaseType(tableMetaDataDto.getDataType());
             tableMetaDataDto.setJavaType(map.get("javaType"));
             tableMetaDataDto.setPackageUrl(map.get("packageUrl"));
             tableMetaDataDto.setNeedImport(map.get("needImport"));
+            tableMetaDataDto.setTableComment(tableComment);
         }
     }
 

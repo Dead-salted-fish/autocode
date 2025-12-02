@@ -1,21 +1,27 @@
+##entity包
+#set($entityPackagePath = $packagePaths.get("entity"))
+##mapper包
+#set($mapperPackagePath = $packagePaths.get("mybatismapper"))
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="${basePath}.mapper.${className}Mapper">
+<mapper namespace="#if($mapperPackagePath)$mapperPackagePath.${className}Mapper#end">
 ## ##用来取消换行
 #macro(jdbcTypeHandler $dataType)
  #if($dataType == "DATETIME")
 jdbcType="TIMESTAMP" ##
  #elseif($dataType == "INT")
 jdbcType="INTEGER"
+ #elseif($dataType == "TEXT")
+jdbcType="LONGVARCHAR"
  #else
 jdbcType="$dataType" ##
  #end
  #end
 
 
-    <resultMap id="BaseResultMap" type="${basePath}.entity.${className}">
+    <resultMap id="BaseResultMap" type="#if($entityPackagePath)${entityPackagePath}.${className}#end">
         #foreach($field in $fields)
             #if($field.attributeName && $field.attributeName == "id")
                 <id property="id" column="id" jdbcType="BIGINT"/>
@@ -37,13 +43,13 @@ jdbcType="$dataType" ##
         #end
     </sql>
     #if(  $serverMethods.contains("list") )
-        <select id="getList" resultType="BaseResultMap">
+        <select id="getList" resultType="#if($entityPackagePath)${entityPackagePath}.${className}#end">
             select
             <include refid="Base_Column_List"/>
             from ${tableName}
             <where>
-                <if test="${className}.creater != null">
-                    and creater = #{${className}.creater}
+                <if test="${lowerCaseClassName}.creater != null">
+                    and creater = #{${lowerCaseClassName}.creater}
                 </if>
             </where>
         </select>
@@ -51,8 +57,8 @@ jdbcType="$dataType" ##
 
     #if(  $serverMethods.contains("add") )
         <insert id="add" parameterType="${basePath}.entity.${className}">
-            insert into ${tableName}(#foreach ($field in $fields) ${field.columnName}#if($foreach.hasNext),#end#end)
-            values (#foreach ($field in $fields) #{${field.attributeName}}#if($foreach.hasNext),#end #end)
+            insert into ${tableName}(#foreach ($field in $fields) #if(${field.columnName}!="id")${field.columnName}#if($foreach.hasNext),#end#end#end)
+            values (#foreach ($field in $fields)#if(${field.columnName}!="id") #{${field.attributeName}}#if($foreach.hasNext),#end #end#end)
         </insert>
     #end
 
@@ -61,7 +67,7 @@ jdbcType="$dataType" ##
             delete
             from ${tableName}
             where id = #{id}
-            AND creater = #{userId}
+            AND creater = #{creater}
         </delete>
     #end
 
@@ -69,12 +75,12 @@ jdbcType="$dataType" ##
         <update id="safeUpdate">
             update ${tableName} set
             #foreach($field in $fields)
-                #if($field.attributeName && ($field.attributeName != "id" && $field.attributeName != "creater" && $field.attributeName != "update_time"))
+                #if($field.attributeName && ($field.attributeName != "id" && $field.attributeName != "creater" && $field.attributeName != "update_time")&& $field.attributeName != "create_time")
                     ${field.columnName} = #{${field.attributeName}}#if($foreach.hasNext),#end
                 #end
             #end
-            where id = #{${lowerCaseClassName}Record.id}
-            AND creater = #{userId}
+            where id = #{id}
+            AND creater = #{creater}
         </update>
     #end
 

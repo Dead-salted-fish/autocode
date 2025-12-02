@@ -31,7 +31,7 @@ public class generateEntityDto implements ServerGenerate {
 
     @Override
     public String getGenerateType() {
-        return "Dto";
+        return "DTO";
     }
 
     @Override

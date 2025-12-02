@@ -1,9 +1,14 @@
-#if(${basePath})
-package ${basePath}.entity;
+##自身所在的包
+#set($packagePath = $packagePaths.get($type))
+#if($packagePath)
+package ${packagePath}
 #end
 
+##默认引入
 import lombok.Data;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+##额外包引入
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;
@@ -13,9 +18,7 @@ import $import;
 /**
  #if($tableComment)
  *$tableComment
- #else
- *
-  #end
+ *#end
  */
 
 @TableName(value = "$tableName")

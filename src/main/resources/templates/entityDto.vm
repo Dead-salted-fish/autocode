@@ -1,7 +1,13 @@
-#if(${basePath})
-package ${basePath}.entity.dto;
+##自身所在的包
+#set($packagePath = $packagePaths.get($type))
+#if($packagePath)
+package ${packagePath}
 #end
 
+##默认引入
+import lombok.Data;
+
+##额外包引入
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;
@@ -11,9 +17,7 @@ import $import;
 /**
  #if($tableComment)
  *$tableComment
- #else
- *
- #end
+ *#end
  */
 
 @Data

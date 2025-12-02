@@ -26,4 +26,8 @@ public class AutoCodeRepository {
     public List<TableMetaData> getTableMetaDate(String tableName) {
        return autoCodeMapper.getTableMetaDate(tableName);
     }
+
+    public String getTableComment(String tableName) {
+        return autoCodeMapper.getTableComment(tableName);
+    }
 }

@@ -11,7 +11,8 @@ public enum DatabaseTypeMapping {
     varchar("varchar", "String", "String","0"),
     datetime("datetime", "Date", "java.util.Date","1"),
     decimal("decimal", "BigDecimal", "java.math.BigDecimal","1"),
-    dbchar("char", "String","String", "0");
+    dbchar("char", "String","String", "0"),
+    text("text", "String","String", "0");
 
     //数据库类型
     private final String databaseType;

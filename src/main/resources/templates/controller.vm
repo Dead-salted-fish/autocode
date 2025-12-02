@@ -1,11 +1,25 @@
-#if(${basePath})
-package ${basePath}.controller;
+##自身所在的包
+#set($packagePath = $packagePaths.get($type))
+##dto包
+#set($dtoPackagePath = $packagePaths.get("dto"))
+##service包
+#set($servicePackagePath = $packagePaths.get("service"))
 
-import ${basePath}.service.${className}Service;
-import ${basePath}.entity.dto.${className}Dto;
+#if($packagePath)
+package ${packagePath}
+#end
+
+##默认引入
+#if($servicePackagePath)
+import ${servicePackagePath}.${className}Service;
+#end
+#if($dtoPackagePath)
+import ${dtoPackagePath}.${className}Dto;
+#end
 import com.lld.saltedfishutils.web.result.ReturnResult;
 import org.springframework.web.bind.annotation.*;
-#end
+
+##额外包引入
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
 import $import;

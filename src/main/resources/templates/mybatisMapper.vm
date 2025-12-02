@@ -1,17 +1,39 @@
-#if(${basePath})
-package ${basePath}.mapper;
+##自身所在的包
+#set($packagePath = $packagePaths.get($type))
+##entity包
+#set($entityPackagePath = $packagePaths.get("entity"))
+##dto包
+#set($dtoPackagePath = $packagePaths.get("dto"))
 
-import ${basePath}.entity.${className};
-import ${basePath}.entity.dto.${className}Dto;
+#if($packagePath)
+package ${packagePath}
 #end
 
+##默认引入
+#if($entityPackagePath)
+import ${entityPackagePath}.${className};
+#end
+#if($dtoPackagePath)
+import ${dtoPackagePath}.${className}Dto;
+#end
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+#if(  $serverMethods.contains("list") )
+import java.util.List;
+#end
+
+##额外包引入
+#if($imports && $imports.size() > 0)
+    #foreach($import in $imports)
+    import $import;
+    #end
+#end
 
 @Mapper
 public interface ${className}Mapper  extends BaseMapper<${className}> {
 #if(  $serverMethods.contains("list") )
-    List<${className}> searchList(@Param("${className}") ${className} ${lowerCaseClassName});
+    List<${className}> getList(@Param("${lowerCaseClassName}") ${className} ${lowerCaseClassName});
     #end
 
 #if(  $serverMethods.contains("add") )
@@ -19,10 +41,10 @@ public interface ${className}Mapper  extends BaseMapper<${className}> {
 #end
 
 #if(  $serverMethods.contains("deleteById") )
-    int safeDeleteById(@Param("id") Long id,@Param("userId") Long userId);
+    int safeDeleteById(@Param("${lowerCaseClassName}") ${className} ${lowerCaseClassName});
 #end
 
 #if(  $serverMethods.contains("update") )
-    int safeUpdate(@Param("${className}")${className} ${lowerCaseClassName}, @Param("userId")Long userId);
+    int safeUpdate(@Param("${lowerCaseClassName}") ${className} ${lowerCaseClassName});
  #end
 }

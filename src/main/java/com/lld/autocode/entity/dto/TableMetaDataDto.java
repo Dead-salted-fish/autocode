@@ -48,4 +48,8 @@ public class TableMetaDataDto {
      *  字段索引
      * **/
     private String columnKey;
+    /**
+     *  表备注
+     * **/
+    private String  tableComment;
 }
