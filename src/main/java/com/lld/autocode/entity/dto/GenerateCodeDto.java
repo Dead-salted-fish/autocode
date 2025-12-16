@@ -19,4 +19,6 @@ public class GenerateCodeDto {
     private String basePath;
     //包路径
     private List< String> packagePaths;
+    //add添加页组件
+    private List<String> webComponent;
 }

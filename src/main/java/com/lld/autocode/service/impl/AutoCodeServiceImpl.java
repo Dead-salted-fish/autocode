@@ -201,6 +201,15 @@ public class AutoCodeServiceImpl implements AutoCodeService {
             packagePathMap.put( split[0].toLowerCase(), split[1]);
         }
 
+        Map<String, String> filedsAndComponentMapping = new HashMap<>();
+        List<String> webComponents = generateCodeDto.getWebComponent();
+        for (String webComponentStr : webComponents) {
+            String[] split = webComponentStr.split("-");
+            if(split.length==2){
+                filedsAndComponentMapping.put(split[0], split[1]);
+            }
+        }
+
         //模板数据
         model.put("type", lowerCaseType);
         model.put("tableName", tableName);
@@ -212,6 +221,7 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         model.put("basePath", generateCodeDto.getBasePath());
         model.put("packagePaths", packagePathMap);
         model.put("tableComment", tableComment!=null&&tableComment.length()>0?tableComment:null);
+        model.put("webComponent",filedsAndComponentMapping);
         return model;
     }
 

@@ -1,17 +1,60 @@
+#set($usedComponents = [])
+
+#macro(setGlobalComponents $tempComponent)
+    #if(!($usedComponents.contains($tempComponent)))
+    #set($temp  = $usedComponents.add($tempComponent))
+    #end
+#end
+
+#macro(getComponent $field)
+    #set($tempComponent = $webComponent.get(${field.columnName}))
+    #if($tempComponent && $tempComponent != "")
+        #setGlobalComponents($tempComponent)
+        #if($tempComponent == "Select")
+            <Select
+                    :options="${field.attributeName}Options"
+                    v-model:value="formState.${field.attributeName}"
+                    placeholder="请选择"
+            />
+        #elseif($tempComponent == "DatePicker")
+            <DatePicker
+                    type="date"
+                    format="YYYY-MM-DD"
+                    v-model:value="formState.${field.attributeName}"
+            />
+         #elseif($tempComponent == "Textarea")
+            <Textarea
+                    v-model:value="formState.${field.attributeName}"
+                    :rows="3"
+                    placeholder="请输入备注信息（可选）"
+                    show-count
+                    :maxlength="500"
+            />
+        #elseif($tempComponent == "InputNumber")
+            <InputNumber
+                    v-model:value="formState.${field.attributeName}"/>
+        #else
+            <Input  v-model:value="formState.${field.attributeName}"/>
+        #end
+    #else
+        #setGlobalComponents("Input")
+       <Input v-model:value="formState.${field.attributeName}"/>
+    #end
+#end
+
 <template>
     <Card>
         <Form ref="formRef" :wrapper-col="wrapperCol" :label-col="labelCol" :model="formState">
             <Row>
                 #set($excludeFields = ["id","createTime", "updateTime", "creater", "updater"])
                 #foreach($field in $fields)
-                    #if(!$excludeFields.contains($field.attributeName))
+                    #if(!$excludeFields.contains($field.attributeName) && $webComponent.get(${field.columnName}))
                         <Col span="24">
-                        <FormItem label="#if(${field.columnComment}) ${field.columnComment} #end"
-                                  name="${field.attributeName}">
-                            <Input v-model:value="formState.${field.attributeName}"/>
-                        </FormItem>
+                            <FormItem label="#if(${field.columnComment}) ${field.columnComment} #end"
+                                      name="${field.attributeName}">
+                                #getComponent($field)
+                            </FormItem>
                         </Col>
-
                     #end
                 #end
             </Row>
@@ -38,15 +81,11 @@
         Row,
         Col,
         Card,
-        Input,
-        Cascader,
-        RadioGroup,
-        RadioButton,
         message,
-        TreeSelect,
-        InputNumber,
         Select,
-        Textarea,
+        #foreach($components in $usedComponents)
+                ${components},
+        #end
     } from 'ant-design-vue'
     import {jx3Http} from '/@/utils/http/axios'
     import type {FormInstance} from 'ant-design-vue'
@@ -65,19 +104,15 @@
         components: {
             message,
             Select,
-            Input,
-            InputNumber,
             Button,
             Form,
             FormItem,
             Row,
             Col,
             Card,
-            Cascader,
-            RadioGroup,
-            RadioButton,
-            TreeSelect,
-            Textarea,
+    #foreach($components in $usedComponents)
+            ${components},
+    #end
         },
         props: {
             onClose: Function,
