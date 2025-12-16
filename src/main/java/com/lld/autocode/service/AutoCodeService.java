@@ -21,4 +21,6 @@ public interface AutoCodeService {
      * 生成代码
      * **/
     ReturnResult generateCode(GenerateCodeDto generateCodeDto);
+
+    ReturnResult getWebComponents();
 }

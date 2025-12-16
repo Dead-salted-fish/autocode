@@ -101,7 +101,19 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         generateWebTemplate(generateCodeDto);
         return ReturnResult.OK();
     }
-   /**
+
+    @Override
+    public ReturnResult getWebComponents() {
+        List<String> webComponents = new ArrayList<>();
+        webComponents.add("Input");
+        webComponents.add("Select");
+        webComponents.add("DatePicker");
+        webComponents.add("Textarea");
+        webComponents.add("InputNumber");
+        return ReturnResult.OK(webComponents);
+    }
+
+    /**
      * 获取web端代码
      **/
     private void generateWebTemplate(GenerateCodeDto generateCodeDto) {

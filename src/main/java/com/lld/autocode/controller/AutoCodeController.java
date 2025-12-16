@@ -31,6 +31,11 @@ public class AutoCodeController {
         return autoCodeService.getJavaTypes();
     }
 
+    @GetMapping ("/getWebComponents")
+    public ReturnResult getWebComponents(TableInfoDto getJavaTypes){
+        return autoCodeService.getWebComponents();
+    }
+
     @PostMapping ("/generateCode")
     public ReturnResult generateCode(@RequestBody GenerateCodeDto generateCodeDto){
         return autoCodeService.generateCode(generateCodeDto);
