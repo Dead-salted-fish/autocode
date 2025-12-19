@@ -6,6 +6,15 @@ package ${packagePath}
 
 ##默认引入
 import lombok.Data;
+## 判断是否引入jsonformat
+#foreach($field in $fields)
+    #if($field.columnDataType=="datetime")
+        #set($needJsonFormat = true)
+    #end
+#end
+#if($needJsonFormat)
+import com.fasterxml.jackson.annotation.JsonFormat;
+#end
 
 ##额外包引入
 #if($imports && $imports.size() > 0)
@@ -19,7 +28,6 @@ import $import;
  *$tableComment
  *#end
  */
-
 @Data
 public class ${className}Dto {
 
@@ -28,6 +36,9 @@ public class ${className}Dto {
     /**
      * $field.columnComment
      */
+    #end
+    #if($field.columnDataType=="datetime")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     #end
     private $field.javaType $field.attributeName;
 

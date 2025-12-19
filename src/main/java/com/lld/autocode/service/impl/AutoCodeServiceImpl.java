@@ -16,13 +16,18 @@ import com.lld.autocode.utils.DatabaseTypeMapping;
 import com.lld.saltedfishutils.utils.MPPageConverter;
 import com.lld.saltedfishutils.web.result.ReturnResult;
 import org.apache.velocity.app.VelocityEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.*;
 
 @Service
 public class AutoCodeServiceImpl implements AutoCodeService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AutoCodeServiceImpl.class);
 
     @Value("${autocode.generate-path}")
     private String generatePath;
@@ -97,10 +102,42 @@ public class AutoCodeServiceImpl implements AutoCodeService {
      **/
     @Override
     public ReturnResult generateCode(GenerateCodeDto generateCodeDto) {
-        generateServerTemplate(generateCodeDto);
-        generateWebTemplate(generateCodeDto);
+        clearGeneratePath();
+        //表名
+        String tableName = generateCodeDto.getTableName();
+        //表备注
+        String tableComment = autoCodeRepository.getTableComment(tableName);
+        generateServerTemplate(generateCodeDto,tableComment);
+        generateWebTemplate(generateCodeDto,tableComment);
         return ReturnResult.OK();
     }
+
+    // 清理生成目录
+    private void clearGeneratePath() {
+        try {
+            File directory = new File(generatePath);
+            if (directory.exists() && directory.isDirectory()) {
+                logger.info("开始清理生成目录: " + generatePath);
+
+                File[] files = directory.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isFile()) {
+                            logger.info("删除文件: " + file.getName());
+                        } else if (file.isDirectory()) {
+                            logger.info("删除目录: " + file.getName());
+                        }
+                        file.delete();
+                    }
+                }
+                logger.info("目录清理完成，共处理 " + (files != null ? files.length : 0) + " 个项目");
+            }
+        } catch (Exception e) {
+            logger.error("清理生成目录失败: " + generatePath, e);
+            throw new RuntimeException("清理生成目录失败: " + generatePath, e);
+        }
+    }
+
 
     @Override
     public ReturnResult getWebComponents() {
@@ -116,7 +153,7 @@ public class AutoCodeServiceImpl implements AutoCodeService {
     /**
      * 获取web端代码
      **/
-    private void generateWebTemplate(GenerateCodeDto generateCodeDto) {
+    private void generateWebTemplate(GenerateCodeDto generateCodeDto, String tableComment) {
         List<String> webGenerateOptions = generateCodeDto.getWebGenerateOptions();
         for (WebGenerate webGenerate : webGenerates) {
             String generateType = webGenerate.getGenerateType();
@@ -127,14 +164,14 @@ public class AutoCodeServiceImpl implements AutoCodeService {
                 continue;
             }
 
-            Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto,generateType );
+            Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto,generateType ,tableComment);
             webGenerate.doGenerate(stringObjectMap);
         }
     }
    /**
      * 生成服务端代码
      **/
-    private void generateServerTemplate(GenerateCodeDto generateCodeDto) {
+    private void generateServerTemplate(GenerateCodeDto generateCodeDto, String tableComment) {
         List<String> serverGenerateOptions = generateCodeDto.getServerGenerateOptions();
         for (ServerGenerate serverGenerate : serverGenerates) {
             String generateType = serverGenerate.getGenerateType();
@@ -145,20 +182,19 @@ public class AutoCodeServiceImpl implements AutoCodeService {
                 continue;
             }
 
-            Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto, generateType);
+            Map<String, Object> stringObjectMap = buildTemplateData(generateCodeDto, generateType,tableComment);
             serverGenerate.doGenerate(stringObjectMap);
         }
     }
 
-    private Map<String, Object> buildTemplateData(GenerateCodeDto generateCodeDto, String type) {
+    private Map<String, Object> buildTemplateData(GenerateCodeDto generateCodeDto, String type,String tableComment) {
         // 准备模板数据
         Map<String, Object> model = new HashMap<>();
         String lowerCaseType = type.toLowerCase();
 
         //表名
         String tableName = generateCodeDto.getTableName();
-        //表备注
-        String tableComment = autoCodeRepository.getTableComment(tableName);
+
         //类名
         String className = generateCamelCaseName(tableName, true);
         //首字母小写的类名
@@ -188,6 +224,7 @@ public class AutoCodeServiceImpl implements AutoCodeService {
             Map<String, String> fieldInfo = new HashMap<>();
             fieldInfo.put("javaType", tableMetaDataDto.getJavaType());
             fieldInfo.put("upperCaseDataType", tableMetaDataDto.getDataType().toUpperCase());
+            fieldInfo.put("columnDataType", tableMetaDataDto.getDataType());
             fieldInfo.put("columnName", tableMetaDataDto.getColumnName());
             fieldInfo.put("attributeName", generateCamelCaseName(tableMetaDataDto.getColumnName(), false));
             fieldInfo.put("columnComment", tableMetaDataDto.getColumnComment());

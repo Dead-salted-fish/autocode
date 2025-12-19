@@ -20,7 +20,6 @@ import $import;
  *$tableComment
  *#end
  */
-
 @TableName(value = "$tableName")
 @Data
 public class $className {
