@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lld.autocode.entity.TableInfo;
 import com.lld.autocode.entity.TableMetaData;
 import com.lld.autocode.entity.Vo.TableInfoVo;
+import com.lld.autocode.entity.dto.FileInfoDto;
 import com.lld.autocode.entity.dto.GenerateCodeDto;
 import com.lld.autocode.entity.dto.TableInfoDto;
 import com.lld.autocode.entity.dto.TableMetaDataDto;
@@ -15,6 +16,7 @@ import com.lld.autocode.service.AutoCodeService;
 import com.lld.autocode.utils.DatabaseTypeMapping;
 import com.lld.saltedfishutils.utils.MPPageConverter;
 import com.lld.saltedfishutils.web.result.ReturnResult;
+import org.apache.commons.io.FileUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -149,6 +154,53 @@ public class AutoCodeServiceImpl implements AutoCodeService {
         webComponents.add("InputNumber");
         return ReturnResult.OK(webComponents);
     }
+
+    @Override
+    public ReturnResult getGenerateFiles() {
+        List<FileInfoDto> generateFiles = new ArrayList<>();
+        File directory = new File(generatePath);
+        if (directory.exists() && directory.isDirectory()) {
+
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()) {
+                        FileInfoDto fileInfoDto = new FileInfoDto();
+                        fileInfoDto.setFileName(file.getName());
+                        fileInfoDto.setLastModified( new Date(file.lastModified()));
+                        generateFiles.add(fileInfoDto);
+                    }
+                }
+            }
+
+        }
+
+        return ReturnResult.OK(generateFiles);
+    }
+
+    @Override
+    public ReturnResult getGenerateFileContent(FileInfoDto fileInfoDto) {
+        String fileName = fileInfoDto.getFileName();
+        // 验证文件名，防止路径遍历
+        if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+            throw new IllegalArgumentException("非法的文件名");
+        }
+
+        try {
+            Path filePath = Paths.get(generatePath, fileName);
+            // 检查文件是否在指定目录内
+            if (!filePath.startsWith(generatePath)) {
+                throw new SecurityException("访问被拒绝");
+            }
+
+            String fileContent = FileUtils.readFileToString(filePath.toFile(), "UTF-8");
+            return ReturnResult.OK(fileContent);
+        } catch (IOException e) {
+            logger.error("读取文件失败: " + fileName, e);
+            throw new RuntimeException("文件读取失败: " + fileName, e);
+        }
+    }
+
 
     /**
      * 获取web端代码

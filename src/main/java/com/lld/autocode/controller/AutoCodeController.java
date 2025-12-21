@@ -1,5 +1,6 @@
 package com.lld.autocode.controller;
 
+import com.lld.autocode.entity.dto.FileInfoDto;
 import com.lld.autocode.entity.dto.GenerateCodeDto;
 import com.lld.autocode.entity.dto.TableInfoDto;
 import com.lld.autocode.service.AutoCodeService;
@@ -39,5 +40,15 @@ public class AutoCodeController {
     @PostMapping ("/generateCode")
     public ReturnResult generateCode(@RequestBody GenerateCodeDto generateCodeDto){
         return autoCodeService.generateCode(generateCodeDto);
+    }
+
+    @GetMapping ("/getGenerateFiles")
+    public ReturnResult getGenerateFiles(TableInfoDto getJavaTypes){
+        return autoCodeService.getGenerateFiles();
+    }
+
+    @PostMapping ("/getGenerateFileContent")
+    public ReturnResult getGenerateFileContent(@RequestBody FileInfoDto fileInfoDto){
+        return autoCodeService.getGenerateFileContent(fileInfoDto);
     }
 }

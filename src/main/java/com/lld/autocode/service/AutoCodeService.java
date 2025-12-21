@@ -1,5 +1,6 @@
 package com.lld.autocode.service;
 
+import com.lld.autocode.entity.dto.FileInfoDto;
 import com.lld.autocode.entity.dto.GenerateCodeDto;
 import com.lld.autocode.entity.dto.TableInfoDto;
 import com.lld.saltedfishutils.web.result.ReturnResult;
@@ -23,4 +24,8 @@ public interface AutoCodeService {
     ReturnResult generateCode(GenerateCodeDto generateCodeDto);
 
     ReturnResult getWebComponents();
+
+    ReturnResult getGenerateFiles();
+
+    ReturnResult getGenerateFileContent(FileInfoDto fileInfoDto);
 }
