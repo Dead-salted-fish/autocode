@@ -5,11 +5,11 @@ import com.lld.autocode.entity.TableInfo;
 import com.lld.autocode.entity.TableMetaData;
 import com.lld.autocode.entity.dto.TableInfoDto;
 import com.lld.autocode.mapper.AutoCodeMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Component
+@Repository
 public class AutoCodeRepository {
 
     private AutoCodeMapper autoCodeMapper;
