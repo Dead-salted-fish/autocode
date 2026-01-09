@@ -21,7 +21,7 @@ import $entityPath.${className};
 #if($dtoPath)
 import $dtoPath.${className}Dto;
 #end
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 #if($imports && $imports.size() > 0)
     #foreach($import in $imports)
@@ -30,7 +30,7 @@ import $import;
 #end
 
 
-@Component
+@Repository
 public class ${className}Repository {
 
     private ${className}Mapper ${lowerCaseClassName}Mapper;
